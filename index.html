@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>W杯2026 オッズ分析 | 期待値ベース優勝予想</title>
+<style>
+:root {
+  --bg: #f0f2f8;
+  --white: #fff;
+  --surf2: #f8fafc;
+  --border: #e2e8f0;
+  --ink: #0f172a;
+  --ink2: #334155;
+  --muted: #64748b;
+  --faint: #94a3b8;
+  --blue: #2563eb;
+  --blue-bg: #eff6ff;
+  --green: #059669;
+  --green-bg: #ecfdf5;
+  --red: #dc2626;
+  --red-bg: #fef2f2;
+  --amber: #d97706;
+  --amber-bg: #fffbeb;
+  --purple: #7c3aed;
+  --purple-bg: #f5f3ff;
+  --gold: #b45309;
+  --sh: 0 1px 3px rgba(15,23,42,.07), 0 1px 2px rgba(15,23,42,.04);
+  --sh-md: 0 4px 16px rgba(15,23,42,.09);
+  --r: 12px;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--ink);font-family:-apple-system,'Hiragino Sans','Noto Sans JP','Segoe UI',sans-serif;font-size:14px;-webkit-font-smoothing:antialiased;}
+
+/* ─ HEADER ─ */
+header{background:var(--ink);color:#fff;padding:0 24px;}
+.hdr-inner{max-width:1300px;margin:0 auto;padding:18px 0;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;}
+.hdr-left h1{font-size:clamp(18px,3vw,24px);font-weight:800;letter-spacing:-.5px;}
+.hdr-left h1 span{color:#fbbf24;}
+.hdr-sub{font-size:11px;color:rgba(255,255,255,.5);margin-top:3px;letter-spacing:.3px;}
+.hdr-right{display:flex;gap:8px;flex-wrap:wrap;}
+.hdr-pill{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:20px;padding:4px 12px;font-size:11px;font-weight:600;color:rgba(255,255,255,.8);}
+.hdr-pill.hot{background:rgba(251,191,36,.2);border-color:rgba(251,191,36,.4);color:#fbbf24;}
+
+/* ─ MAIN ─ */
+main{max-width:1300px;margin:0 auto;padding:24px 20px;}
+
+/* ─ ALERT ─ */
+.alert{background:var(--amber-bg);border:1px solid #fde68a;border-radius:var(--r);padding:12px 16px;display:flex;gap:10px;margin-bottom:20px;align-items:flex-start;}
+.alert svg{width:16px;height:16px;color:var(--amber);flex-shrink:0;margin-top:1px;}
+.alert p{font-size:12px;color:#92400e;line-height:1.6;}
+.alert p strong{font-weight:700;}
+
+/* ─ SECTION ─ */
+.sec-hd{display:flex;align-items:center;justify-content:space-between;margin:28px 0 14px;}
+.sec-hd:first-child{margin-top:0;}
+.sec-title{font-size:14px;font-weight:800;color:var(--ink);display:flex;align-items:center;gap:8px;}
+.sec-title svg{width:16px;height:16px;color:var(--muted);}
+.sec-badge{font-size:11px;font-weight:700;padding:3px 10px;background:var(--blue-bg);color:var(--blue);border-radius:20px;}
+
+/* ─ GRID ─ */
+.g{display:grid;gap:16px;}
+.g2{grid-template-columns:repeat(2,1fr);}
+.g3{grid-template-columns:repeat(3,1fr);}
+.g4{grid-template-columns:repeat(4,1fr);}
+
+/* ─ KPI ─ */
+.kpi{background:var(--white);border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--sh);padding:18px 20px;position:relative;overflow:hidden;}
+.kpi::after{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:var(--r) var(--r) 0 0;}
+.kpi-blue::after{background:linear-gradient(90deg,var(--blue),#60a5fa);}
+.kpi-green::after{background:linear-gradient(90deg,var(--green),#34d399);}
+.kpi-amber::after{background:linear-gradient(90deg,var(--amber),#fbbf24);}
+.kpi-purple::after{background:linear-gradient(90deg,var(--purple),#a78bfa);}
+.kpi-lbl{font-size:11px;color:var(--muted);font-weight:600;margin-bottom:6px;letter-spacing:.3px;}
+.kpi-val{font-size:28px;font-weight:900;letter-spacing:-1px;color:var(--ink);}
+.kpi-val.green{color:var(--green);}
+.kpi-val.amber{color:var(--amber);}
+.kpi-sub{font-size:11px;color:var(--muted);margin-top:6px;}
+
+/* ─ CARD ─ */
+.card{background:var(--white);border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--sh);overflow:hidden;}
+.card-hd{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.card-title{font-size:12px;font-weight:700;color:var(--ink2);display:flex;align-items:center;gap:6px;}
+.card-title svg{width:14px;height:14px;}
+.card-body{padding:16px 18px;}
+
+/* ─ MAIN TABLE ─ */
+.tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;}
+table{width:100%;border-collapse:collapse;white-space:nowrap;}
+thead th{font-size:10px;font-weight:700;color:var(--faint);text-transform:uppercase;letter-spacing:.6px;padding:9px 14px;background:var(--surf2);border-bottom:1px solid var(--border);text-align:left;position:sticky;top:0;}
+thead th.r{text-align:right;}
+thead th.c{text-align:center;}
+tbody td{padding:11px 14px;border-bottom:1px solid var(--border);font-size:13px;}
+tbody tr:last-child td{border-bottom:none;}
+tbody tr:hover td{background:#fafbff;}
+.td-r{text-align:right;}
+.td-c{text-align:center;}
+
+/* ─ FLAG + NAME ─ */
+.team-cell{display:flex;align-items:center;gap:10px;}
+.flag{font-size:22px;line-height:1;}
+.team-name{font-weight:700;font-size:13px;}
+.team-rank{font-size:10px;color:var(--faint);margin-top:1px;}
+
+/* ─ ODDS BADGE ─ */
+.odds{font-weight:700;font-size:13px;}
+.odds-jp{font-size:12px;color:var(--muted);}
+
+/* ─ EV BADGE ─ */
+.ev-badge{display:inline-flex;align-items:center;gap:3px;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:800;}
+.ev-hot{background:#fff7ed;color:#c2410c;border:1px solid #fed7aa;}
+.ev-good{background:var(--green-bg);color:var(--green);border:1px solid #a7f3d0;}
+.ev-neutral{background:var(--surf2);color:var(--muted);border:1px solid var(--border);}
+.ev-bad{background:var(--red-bg);color:var(--red);border:1px solid #fecaca;}
+
+/* ─ DIFF BADGE ─ */
+.diff-pos{color:var(--green);font-weight:700;}
+.diff-neg{color:var(--red);font-weight:700;}
+
+/* ─ WIN BAR ─ */
+.prob-bar{width:80px;}
+.prob-num{font-size:12px;font-weight:600;color:var(--ink2);margin-bottom:3px;}
+.bar-track{height:5px;background:var(--border);border-radius:3px;overflow:hidden;}
+.bar-fill{height:100%;border-radius:3px;}
+
+/* ─ TIER LABEL ─ */
+.tier{display:inline-flex;align-items:center;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:800;letter-spacing:.3px;}
+.tier-s{background:#fef3c7;color:#92400e;}
+.tier-a{background:#dbeafe;color:#1e40af;}
+.tier-b{background:#f0fdf4;color:#166534;}
+.tier-c{background:#f5f3ff;color:#5b21b6;}
+.tier-d{background:var(--surf2);color:var(--muted);}
+
+/* ─ STYLE CARD ─ */
+.style-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;}
+.style-card{background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:16px;box-shadow:var(--sh);}
+.style-hd{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+.style-flag{font-size:28px;}
+.style-name{font-weight:800;font-size:15px;}
+.style-sub{font-size:10px;color:var(--muted);}
+.style-tag{display:inline-flex;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:700;margin-right:4px;margin-bottom:4px;}
+.style-desc{font-size:12px;color:var(--ink2);line-height:1.7;margin-top:8px;}
+.style-record{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap;}
+.rec-item{background:var(--surf2);border:1px solid var(--border);border-radius:6px;padding:4px 10px;font-size:10px;font-weight:600;color:var(--ink2);}
+.rec-item.win{background:var(--green-bg);border-color:#a7f3d0;color:var(--green);}
+.rec-item.loss{background:var(--red-bg);border-color:#fecaca;color:var(--red);}
+
+/* ─ EV EXPLAIN ─ */
+.ev-box{background:var(--blue-bg);border:1px solid #bfdbfe;border-radius:var(--r);padding:16px 20px;}
+.ev-box h3{font-size:13px;font-weight:800;color:var(--blue);margin-bottom:8px;}
+.ev-box p{font-size:12px;color:#1e40af;line-height:1.8;}
+.ev-box code{background:#dbeafe;padding:1px 6px;border-radius:4px;font-family:monospace;font-size:12px;}
+
+/* ─ TARGET BOX ─ */
+.target-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;}
+.target-card{border-radius:var(--r);padding:16px;border:2px solid;}
+.target-card.buy{background:#fafffe;border-color:#34d399;}
+.target-card.watch{background:#fffdf0;border-color:#fbbf24;}
+.target-card.avoid{background:#fff5f5;border-color:#fca5a5;}
+.target-label{font-size:10px;font-weight:800;letter-spacing:.5px;margin-bottom:8px;}
+.buy .target-label{color:var(--green);}
+.watch .target-label{color:var(--amber);}
+.avoid .target-label{color:var(--red);}
+.target-team{font-size:18px;font-weight:900;margin-bottom:4px;}
+.target-reason{font-size:12px;color:var(--ink2);line-height:1.7;}
+.target-odds{font-size:11px;color:var(--muted);margin-top:8px;}
+
+/* ─ TABS ─ */
+.tabs{display:flex;gap:4px;margin-bottom:16px;background:var(--surf2);padding:4px;border-radius:8px;border:1px solid var(--border);width:fit-content;}
+.tab-btn{padding:6px 14px;border-radius:6px;font-size:12px;font-weight:600;border:none;background:none;color:var(--muted);cursor:pointer;transition:all .15s;}
+.tab-btn.active{background:var(--white);color:var(--ink);box-shadow:var(--sh);}
+
+/* ─ FOOTER ─ */
+footer{text-align:center;padding:24px;font-size:11px;color:var(--faint);border-top:1px solid var(--border);margin-top:8px;}
+
+/* ─ RESPONSIVE ─ */
+@media(max-width:1024px){.g4{grid-template-columns:repeat(2,1fr);}  }
+@media(max-width:768px){.g3,.g2{grid-template-columns:1fr;}.g4{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:480px){.g4{grid-template-columns:1fr;}main{padding:14px 12px;}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="hdr-inner">
+    <div class="hdr-left">
+      <h1>⚽ W杯 <span>2026</span> オッズ分析</h1>
+      <div class="hdr-sub">海外ブックメーカー × 日本オッズ 期待値ベース優勝予想 ／ 2026.4.1 更新</div>
+    </div>
+    <div class="hdr-right">
+      <span class="hdr-pill hot">🔥 スペイン最有力</span>
+      <span class="hdr-pill">48カ国出場</span>
+      <span class="hdr-pill">決勝 7/19</span>
+    </div>
+  </div>
+</header>
+
+<main>
+
+  <div class="alert">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+    <p><strong>免責事項：</strong>本サイトは情報提供を目的としています。ギャンブルへの参加は自己責任で行い、適切な管理のもとで楽しんでください。期待値はあくまで理論値であり、実際の結果を保証するものではありません。日本でのスポーツ投票は公営競技（toto等）の範囲内でご利用ください。</p>
+  </div>
+
+  <!-- KPI -->
+  <div class="g g4">
+    <div class="kpi kpi-blue">
+      <div class="kpi-lbl">出場国数</div>
+      <div class="kpi-val">48</div>
+      <div class="kpi-sub">史上最多・3カ国共催</div>
+    </div>
+    <div class="kpi kpi-green">
+      <div class="kpi-lbl">海外最高EV</div>
+      <div class="kpi-val green">+24%</div>
+      <div class="kpi-sub">ノルウェー（日本との乖離）</div>
+    </div>
+    <div class="kpi kpi-amber">
+      <div class="kpi-lbl">最有力候補</div>
+      <div class="kpi-val amber">スペイン</div>
+      <div class="kpi-sub">+450 / 確率18.2%</div>
+    </div>
+    <div class="kpi kpi-purple">
+      <div class="kpi-lbl">日本オッズ</div>
+      <div class="kpi-val" style="color:var(--purple)">51倍</div>
+      <div class="kpi-sub">海外+5000（確率2%）</div>
+    </div>
+  </div>
+
+  <!-- 期待値説明 -->
+  <div class="sec-hd" style="margin-top:28px;margin-bottom:12px;">
+    <div class="sec-title">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      期待値の読み方
+    </div>
+  </div>
+  <div class="ev-box">
+    <h3>📐 期待値（EV）とは？</h3>
+    <p>
+      <code>期待値 = (真の勝率 × 日本オッズ) - 1</code><br>
+      例：真の勝率18%・日本オッズ5.5倍 → <code>0.18 × 5.5 - 1 = -0.01</code>（ほぼ均衡）<br><br>
+      <strong>海外ブックメーカーの確率</strong>をベースに「日本のオッズが高い（払戻が良い）かどうか」を計算しています。<br>
+      EV がプラスなら日本オッズが海外より有利＝「割安」、マイナスなら割高です。<br>
+      一般的に胴元の取り分（マージン）は8〜15%のため、EV -15%以内なら許容範囲です。
+    </p>
+  </div>
+
+  <!-- メインオッズ表 -->
+  <div class="sec-hd">
+    <div class="sec-title">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+      全出場国 オッズ・期待値一覧
+    </div>
+    <span class="sec-badge">DraftKings 2026.3.31</span>
+  </div>
+
+  <div class="card">
+    <div class="card-hd">
+      <div class="card-title">
+        <svg viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg>
+        優勝オッズ比較と期待値
+      </div>
+      <div style="font-size:11px;color:var(--muted);">海外確率ベースで計算</div>
+    </div>
+    <div class="tbl-wrap">
+      <table id="oddsTable">
+        <thead>
+          <tr>
+            <th>国</th>
+            <th class="c">ティア</th>
+            <th class="r">FIFAランク</th>
+            <th class="r">海外オッズ(米)</th>
+            <th class="r">海外確率</th>
+            <th class="r">日本推定倍率</th>
+            <th class="r">期待値(EV)</th>
+            <th class="c">判定</th>
+            <th class="r">海外-日本差</th>
+          </tr>
+        </thead>
+        <tbody id="tblBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- 狙い目 -->
+  <div class="sec-hd">
+    <div class="sec-title">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+      期待値ベース 投資判断マップ
+    </div>
+  </div>
+  <div class="target-grid">
+    <div class="target-card buy">
+      <div class="target-label">✅ BUY（期待値プラス〜均衡）</div>
+      <div class="target-team">🇳🇴 ノルウェー</div>
+      <div class="target-reason">海外+2800（確率3.4%）に対し日本推定倍率が32倍以上になりやすい。EV換算で+9〜+24%と優位。ハーランド擁する初出場国で注目度が低く、日本の胴元がオッズを甘く設定しがち。</div>
+      <div class="target-odds">海外+2800 → 日本32〜40倍推定</div>
+    </div>
+    <div class="target-card buy">
+      <div class="target-label">✅ BUY（期待値プラス〜均衡）</div>
+      <div class="target-team">🇨🇴 コロンビア</div>
+      <div class="target-reason">海外+4000（確率2.4%）。南米予選3位通過の実力派。知名度が低いため日本オッズが割高になりにくく相対的に有利。若い世代が揃い一発勝負に強い。</div>
+      <div class="target-odds">海外+4000 → 日本45〜55倍推定</div>
+    </div>
+    <div class="target-card buy">
+      <div class="target-label">✅ BUY（均衡〜微プラス）</div>
+      <div class="target-team">🇩🇪 ドイツ</div>
+      <div class="target-reason">海外+1400（確率6.7%）。EURO2024で復活した世代が揃い、日本では知名度が高くオッズが高め設定になりやすい。15〜17倍なら期待値的に均衡以上。</div>
+      <div class="target-odds">海外+1400 → 日本15〜18倍推定</div>
+    </div>
+    <div class="target-card watch">
+      <div class="target-label">👀 WATCH（様子見）</div>
+      <div class="target-team">🇦🇷 アルゼンチン</div>
+      <div class="target-reason">ディフェンディングチャンピオンで人気が集まるため日本オッズが低くなりやすい。海外+850（確率10.5%）に対し日本9〜11倍なら均衡、12倍超なら買い。メッシの状態次第で大きく変わる。</div>
+      <div class="target-odds">海外+850 → 日本9〜11倍推定</div>
+    </div>
+    <div class="target-card watch">
+      <div class="target-label">👀 WATCH（様子見）</div>
+      <div class="target-team">🇫🇷 フランス</div>
+      <div class="target-reason">2大会連続決勝進出で確率は高いが日本でも人気でオッズが低め。7〜8倍なら均衡、8.5倍超が買い目安。エムバペの負傷リスクに注意。</div>
+      <div class="target-odds">海外+600 → 日本7〜8倍推定</div>
+    </div>
+    <div class="target-card avoid">
+      <div class="target-label">❌ AVOID（期待値マイナス）</div>
+      <div class="target-team">🇧🇷 ブラジル</div>
+      <div class="target-reason">海外+850（確率10.5%）だが、南米予選5位通過という弱体化が顕著。日本での人気は高いためオッズが甘くなりにくい。名前で買うには割高感あり。アンチェロッティ体制の熟成が未知数。</div>
+      <div class="target-odds">海外+850 → 日本9〜11倍推定（過大評価気味）</div>
+    </div>
+  </div>
+
+  <!-- スタイル解説 -->
+  <div class="sec-hd">
+    <div class="sec-title">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      主要国 サッカースタイル & 直近4年成績
+    </div>
+  </div>
+  <div class="style-grid" id="styleGrid"></div>
+
+  <!-- 注意書き -->
+  <div style="margin-top:28px;padding:16px 20px;background:var(--surf2);border:1px solid var(--border);border-radius:var(--r);font-size:12px;color:var(--muted);line-height:1.8;">
+    <strong style="color:var(--ink2);">データ出典：</strong>DraftKings（米）2026.3.31、Sporting News、prediction markets (Kalshi/Polymarket)。日本推定倍率はtotoくじ等日本公営サービスの過去傾向から試算。グループ分け確定後に期待値は変動します。本サイトは定期更新予定です。
+  </div>
+
+</main>
+
+<footer>
+  W杯2026 オッズ分析サイト ／ 情報提供目的 ／ Powered by OpenClaw × ZETTAI
+</footer>
+
+<script>
+// ───────────────────────────────────────────
+// DATA
+// ───────────────────────────────────────────
+const teams = [
+  { flag:'🇪🇸', name:'スペイン',    rank:1,  us:450,   jpOdds:5.5,  tier:'S', style:'pos' },
+  { flag:'🏴󠁧󠁢󠁥󠁮󠁧󠁿', name:'イングランド',rank:3,  us:600,   jpOdds:7.0,  tier:'S', style:'eng' },
+  { flag:'🇫🇷', name:'フランス',    rank:4,  us:600,   jpOdds:7.0,  tier:'S', style:'fra' },
+  { flag:'🇦🇷', name:'アルゼンチン',rank:2,  us:850,   jpOdds:10.0, tier:'S', style:'arg' },
+  { flag:'🇧🇷', name:'ブラジル',    rank:5,  us:850,   jpOdds:10.0, tier:'A', style:'bra' },
+  { flag:'🇵🇹', name:'ポルトガル',  rank:6,  us:1100,  jpOdds:12.5, tier:'A', style:'por' },
+  { flag:'🇩🇪', name:'ドイツ',      rank:9,  us:1400,  jpOdds:16.0, tier:'A', style:'ger' },
+  { flag:'🇳🇱', name:'オランダ',    rank:7,  us:2000,  jpOdds:22.0, tier:'A', style:'ned' },
+  { flag:'🇳🇴', name:'ノルウェー',  rank:29, us:2800,  jpOdds:32.0, tier:'B', style:'nor' },
+  { flag:'🇧🇪', name:'ベルギー',    rank:8,  us:3500,  jpOdds:38.0, tier:'B', style:null },
+  { flag:'🇨🇴', name:'コロンビア',  rank:13, us:4000,  jpOdds:45.0, tier:'B', style:'col' },
+  { flag:'🇯🇵', name:'日本',        rank:18, us:5000,  jpOdds:51.0, tier:'B', style:'jpn' },
+  { flag:'🇲🇦', name:'モロッコ',    rank:11, us:6000,  jpOdds:65.0, tier:'B', style:null },
+  { flag:'🇺🇾', name:'ウルグアイ',  rank:16, us:6500,  jpOdds:70.0, tier:'B', style:null },
+  { flag:'🇹🇷', name:'トルコ',      rank:25, us:6500,  jpOdds:70.0, tier:'B', style:null },
+  { flag:'🇺🇸', name:'アメリカ',    rank:14, us:6500,  jpOdds:70.0, tier:'C', style:null },
+  { flag:'🇲🇽', name:'メキシコ',    rank:15, us:7000,  jpOdds:75.0, tier:'C', style:null },
+  { flag:'🇪🇨', name:'エクアドル',  rank:23, us:8000,  jpOdds:85.0, tier:'C', style:null },
+  { flag:'🇸🇪', name:'スウェーデン',rank:43, us:8000,  jpOdds:85.0, tier:'C', style:null },
+  { flag:'🇭🇷', name:'クロアチア',  rank:10, us:9000,  jpOdds:95.0, tier:'C', style:null },
+  { flag:'🇨🇭', name:'スイス',      rank:17, us:10000, jpOdds:105.0,tier:'C', style:null },
+  { flag:'🇸🇳', name:'セネガル',    rank:19, us:10000, jpOdds:105.0,tier:'C', style:null },
+  { flag:'🇦🇹', name:'オーストリア',rank:24, us:10000, jpOdds:105.0,tier:'C', style:null },
+  { flag:'🇵🇾', name:'パラグアイ',  rank:39, us:20000, jpOdds:200.0,tier:'D', style:null },
+  { flag:'🇨🇦', name:'カナダ',      rank:27, us:20000, jpOdds:200.0,tier:'D', style:null },
+  { flag:'🏴󠁧󠁢󠁳󠁣󠁴󠁿', name:'スコットランド',rank:36,us:20000,jpOdds:200.0,tier:'D', style:null },
+  { flag:'🇨🇮', name:'コートジボワール',rank:42,us:25000,jpOdds:250.0,tier:'D',style:null },
+  { flag:'🇪🇬', name:'エジプト',    rank:34, us:30000, jpOdds:300.0,tier:'D', style:null },
+  { flag:'🇰🇷', name:'韓国',        rank:22, us:35000, jpOdds:350.0,tier:'D', style:null },
+  { flag:'🇬🇭', name:'ガーナ',      rank:72, us:35000, jpOdds:350.0,tier:'D', style:null },
+  { flag:'🇩🇿', name:'アルジェリア',rank:35, us:35000, jpOdds:350.0,tier:'D', style:null },
+  { flag:'🇦🇺', name:'オーストラリア',rank:26,us:45000,jpOdds:450.0,tier:'D',style:null },
+  { flag:'🇹🇳', name:'チュニジア',  rank:40, us:50000, jpOdds:500.0,tier:'D', style:null },
+  { flag:'🇿🇦', name:'南アフリカ',  rank:61, us:80000, jpOdds:800.0,tier:'D', style:null },
+  { flag:'🇵🇦', name:'パナマ',      rank:30, us:100000,jpOdds:1000.0,tier:'D',style:null },
+  { flag:'🇶🇦', name:'カタール',    rank:51, us:100000,jpOdds:1000.0,tier:'D',style:null },
+  { flag:'🇸🇦', name:'サウジアラビア',rank:60,us:100000,jpOdds:1000.0,tier:'D',style:null },
+];
+
+// ───────────────────────────────────────────
+// EV CALC
+// ───────────────────────────────────────────
+function usToProb(us) {
+  if (us > 0) return 100 / (us + 100);
+  return Math.abs(us) / (Math.abs(us) + 100);
+}
+function ev(prob, jpOdds) {
+  return prob * jpOdds - 1;
+}
+function evClass(v) {
+  if (v > 0.05)  return ['ev-hot',   '🔥 強く割安'];
+  if (v > -0.05) return ['ev-good',  '✅ 均衡'];
+  if (v > -0.20) return ['ev-neutral','➖ やや割高'];
+  return ['ev-bad', '❌ 割高'];
+}
+function tierClass(t) {
+  return {S:'tier-s',A:'tier-a',B:'tier-b',C:'tier-c',D:'tier-d'}[t]||'tier-d';
+}
+
+// テーブル描画
+const tbody = document.getElementById('tblBody');
+teams.forEach(t => {
+  const prob = usToProb(t.us);
+  const evVal = ev(prob, t.jpOdds);
+  const [ecls, elbl] = evClass(evVal);
+  const probPct = (prob * 100).toFixed(1);
+  const jpProbPct = (1 / t.jpOdds * 100).toFixed(1);
+  const diffPct = ((prob - 1/t.jpOdds) * 100).toFixed(1);
+  const diffCls = parseFloat(diffPct) >= 0 ? 'diff-pos' : 'diff-neg';
+  const evPct = (evVal * 100).toFixed(0);
+
+  const barColor = evVal > 0 ? '#059669' : evVal > -0.2 ? '#d97706' : '#dc2626';
+
+  tbody.innerHTML += `
+    <tr>
+      <td>
+        <div class="team-cell">
+          <span class="flag">${t.flag}</span>
+          <div>
+            <div class="team-name">${t.name}</div>
+            <div class="team-rank">FIFAランク ${t.rank}位</div>
+          </div>
+        </div>
+      </td>
+      <td class="td-c"><span class="tier ${tierClass(t.tier)}">${t.tier}級</span></td>
+      <td class="td-r" style="color:var(--muted)">${t.rank}</td>
+      <td class="td-r"><span class="odds">+${t.us.toLocaleString()}</span></td>
+      <td class="td-r">
+        <div class="prob-bar">
+          <div class="prob-num">${probPct}%</div>
+          <div class="bar-track"><div class="bar-fill" style="width:${Math.min(prob*300,100)}%;background:${barColor}"></div></div>
+        </div>
+      </td>
+      <td class="td-r"><span class="odds">${t.jpOdds}倍</span><br><span class="odds-jp">(確率 ${jpProbPct}%)</span></td>
+      <td class="td-r"><strong style="color:${evVal>0?'var(--green)':evVal>-0.2?'var(--amber)':'var(--red)'}">${evPct>0?'+':''}${evPct}%</strong></td>
+      <td class="td-c"><span class="ev-badge ${ecls}">${elbl}</span></td>
+      <td class="td-r"><span class="${diffCls}">${parseFloat(diffPct)>0?'+':''}${diffPct}pt</span></td>
+    </tr>`;
+});
+
+// ───────────────────────────────────────────
+// STYLE DATA
+// ───────────────────────────────────────────
+const styles = {
+  pos: {
+    name:'スペイン', flag:'🇪🇸',
+    tags:['ポゼッション','ハイプレス','可変3-4-3','ラ・マシア魂'],
+    tagColors:['#dbeafe','#d1fae5','#fef3c7','#f5f3ff'],
+    desc:'ラミン・ヤマル（18歳）を右に据えた世界最強ポゼッション軍団。GKシモンからのビルドアップで相手を崩し、ヤマルのドリブル→中央展開で仕留める。現世代で最も完成度が高いと評される。',
+    records:['EURO2024 優勝','W杯2022 ベスト16','FIFAランク 1位'],
+    recordTypes:['win','loss',''],
+  },
+  eng: {
+    name:'イングランド', flag:'🏴󠁧󠁢󠁥󠁮󠁧󠁿',
+    tags:['4-3-3','ベリンガム起点','トゥヘル新体制','フィジカル×技術'],
+    tagColors:['#dbeafe','#fef3c7','#d1fae5','#f5f3ff'],
+    desc:'60年ぶりの優勝を狙うトゥヘル就任後の新体制。ベリンガムをインサイドハーフに据え縦に速い攻撃を展開。プレミア勢の豊富な実戦経験が強みで、組織力と個の能力が高いレベルで融合。',
+    records:['EURO2024 準優勝','W杯2022 ベスト8','監督交代（南ゲート→トゥヘル）'],
+    recordTypes:['','',''],
+  },
+  fra: {
+    name:'フランス', flag:'🇫🇷',
+    tags:['エムバペ主役','縦に速い','カウンター特化','スター揃い'],
+    tagColors:['#fef3c7','#dbeafe','#d1fae5','#f5f3ff'],
+    desc:'エムバペ（レアルマドリード）を筆頭にデンベレ、ドゥエとスター揃い。守備ブロックを敷きカウンターで一発で仕留める「負けないサッカー」が特徴。2大会連続決勝進出の安定感は本物。',
+    records:['W杯2022 準優勝','EURO2024 ベスト4','ネーションズリーグ2021 優勝'],
+    recordTypes:['','','win'],
+  },
+  arg: {
+    name:'アルゼンチン', flag:'🇦🇷',
+    tags:['メッシ司令塔','全体プレス','チームワーク','連覇狙い'],
+    tagColors:['#fef3c7','#d1fae5','#dbeafe','#f5f3ff'],
+    desc:'38歳メッシを頂点に置きながら、メッシ不在でも勝てる組織が完成。アルバレス・マルティネスの2トップが機能し、高い位置からのプレスで相手のビルドアップを潰す。35戦無敗記録継続中。',
+    records:['W杯2022 優勝','コパアメリカ2024 優勝','35戦無敗継続中'],
+    recordTypes:['win','win','win'],
+  },
+  bra: {
+    name:'ブラジル', flag:'🇧🇷',
+    tags:['ヴィニシウス主役','再建中','アンチェロッティ','不安定な予選'],
+    tagColors:['#d1fae5','#fef3c7','#dbeafe','#fef2f2'],
+    desc:'アンチェロッティ就任で組織再建中だが、南米予選5位通過と苦戦。ヴィニシウス、ロドリゴの個に頼る部分が大きく組織化が課題。ネイマール招集も未確定。名前の重さと実力の乖離が顕著。',
+    records:['W杯2022 ベスト8','南米予選 5位（苦戦）','監督交代後の再建中'],
+    recordTypes:['loss','loss',''],
+  },
+  por: {
+    name:'ポルトガル', flag:'🇵🇹',
+    tags:['ロナウド問題','若い世代台頭','4-3-3','組み合わせ次第'],
+    tagColors:['#fef3c7','#d1fae5','#dbeafe','#f5f3ff'],
+    desc:'ロナウドの取り扱いが最大の焦点。若手のラファエル・レオン、フェリックスが成長し「ロナウド後」の体制構築が進む。攻撃的な4-3-3で組み合わせ次第では準決勝まで行ける実力を持つ。',
+    records:['EURO2024 ベスト8','W杯2022 ベスト8','若手世代の成長期'],
+    recordTypes:['','',''],
+  },
+  ger: {
+    name:'ドイツ', flag:'🇩🇪',
+    tags:['ゲーゲンプレス','ムシアラ主役','世代交代完了','EURO2024で復活'],
+    tagColors:['#fef3c7','#d1fae5','#dbeafe','#f5f3ff'],
+    desc:'EURO2024（地元開催）でベスト8まで進み若い世代が経験を積んだ。ムシアラを起点に4-2-3-1で縦に速い攻撃を展開。世代交代が完了し2026での躍進が最も期待されるチームの一つ。',
+    records:['EURO2024 ベスト8（開催国）','W杯2022 グループ敗退','世代交代完了'],
+    recordTypes:['','loss','win'],
+  },
+  ned: {
+    name:'オランダ', flag:'🇳🇱',
+    tags:['ファン・ダイク主将','3-4-3','攻守のバランス','コバッチ監督'],
+    tagColors:['#dbeafe','#fef3c7','#d1fae5','#f5f3ff'],
+    desc:'ファン・ダイク率いる守備陣を軸に、ガクポ、フェルホーフェンの攻撃陣が機能する。可変式3-4-3でゲームをコントロールする組織的なサッカーが持ち味。',
+    records:['EURO2024 準優勝','W杯2022 ベスト8','安定した欧州強豪'],
+    recordTypes:['','',''],
+  },
+  nor: {
+    name:'ノルウェー', flag:'🇳🇴',
+    tags:['ハーランド主砲','初W杯出場','シンプル縦攻撃','穴馬最有力'],
+    tagColors:['#fef3c7','#d1fae5','#dbeafe','#f5f3ff'],
+    desc:'マンチェスター・シティのハーランドを中心としたシンプルかつ強力な縦の攻撃が特徴。ノルウェーとして初のW杯出場で経験不足は否めないが、ハーランドが本調子なら何が起きても不思議ではない。海外では穴馬筆頭。',
+    records:['ユーロ2024 予選落ち','W杯2026 初出場','ハーランド FIFA年間MVP級'],
+    recordTypes:['loss','win','win'],
+  },
+  col: {
+    name:'コロンビア', flag:'🇨🇴',
+    tags:['南米予選3位','若い世代','堅守速攻','ルイス・ディアス主役'],
+    tagColors:['#d1fae5','#fef3c7','#dbeafe','#f5f3ff'],
+    desc:'コパアメリカ2024決勝進出（アルゼンチンに惜敗）で実力を証明。ルイス・ディアス（リバプール）を軸に組織守備からのカウンター。若い世代が中心でトーナメントの一発勝負に強い。',
+    records:['コパアメリカ2024 準優勝','南米予選 3位','ルイス・ディアス主役'],
+    recordTypes:['','','win'],
+  },
+  jpn: {
+    name:'日本', flag:'🇯🇵',
+    tags:['久保・三笘軸','高強度プレス','4-2-3-1','ドイツ・スペイン撃破の自信'],
+    tagColors:['#fef3c7','#d1fae5','#dbeafe','#f5f3ff'],
+    desc:'久保建英（レアル・ソシエダ）と三笘薫（ブライトン）を両翼に速いトランジション＋前プレスで格上を崩す。W杯2022でドイツ・スペインを倒した経験がチームに根付き、ベスト8が現実的目標。欧州組の数と質が過去最高水準。',
+    records:['W杯2022 ベスト16','アジア予選 グループ1位','欧州組が過去最多'],
+    recordTypes:['','win','win'],
+  },
+};
+
+const sg = document.getElementById('styleGrid');
+Object.values(styles).forEach(s => {
+  const tagsHtml = s.tags.map((tag,i)=>`<span class="style-tag" style="background:${s.tagColors[i]};color:#334155;">${tag}</span>`).join('');
+  const recHtml = s.records.map((r,i)=>`<span class="rec-item ${s.recordTypes[i]}">${r}</span>`).join('');
+  sg.innerHTML += `
+    <div class="style-card">
+      <div class="style-hd">
+        <div class="style-flag">${s.flag}</div>
+        <div>
+          <div class="style-name">${s.name}</div>
+          <div class="style-sub">スタイル & 成績</div>
+        </div>
+      </div>
+      <div>${tagsHtml}</div>
+      <div class="style-desc">${s.desc}</div>
+      <div class="style-record">${recHtml}</div>
+    </div>`;
+});
+</script>
+</body>
+</html>
