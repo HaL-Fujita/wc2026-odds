@@ -299,6 +299,8 @@ footer{text-align:center;padding:18px;font-size:11px;color:var(--faint);border-t
     <button class="tb" onclick="sw(4)">⚔️ 決勝カード <span class="cnt">28通り</span></button>
     <button class="tb" onclick="sw(5)">⚽ 1試合予想 <span class="cnt">104試合</span></button>
     <button class="tb" onclick="sw(6)">📋 商品ガイド <span class="cnt">TBD</span></button>
+    <button class="tb" onclick="sw(7)">🗂 グループ表 <span class="cnt">12G</span></button>
+    <button class="tb" onclick="sw(8)">🏟 山・対戦表 <span class="cnt">R32→</span></button>
   </div>
 </div>
 
@@ -553,6 +555,24 @@ footer{text-align:center;padding:18px;font-size:11px;color:var(--faint);border-t
 
 <footer>W杯2026 EV追跡システム ／ Powered by OpenClaw × ZETTAI ／ データ出典：DraftKings・SportingNews・Wikipedia ／ 日本発売詳細は確定次第更新</footer>
 
+<!-- PAGE 7: グループ表 -->
+<div class="pg" id="p7">
+  <div class="info info-blue">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+    <p><strong>2026 FIFA ワールドカップ グループステージ（確定）。</strong>12グループ×4チーム、計48カ国。各グループの上位2チーム＋各グループ3位の上位8チームが決勝トーナメント（R32）進出。強豪の山・日本の対戦相手を確認して予想の参考に。</p>
+  </div>
+  <div id="groups-container" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;"></div>
+</div>
+
+<!-- PAGE 8: トーナメント山 -->
+<div class="pg" id="p8">
+  <div class="info info-blue">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+    <p><strong>R32（ラウンド32）の対戦カードは確定。</strong>グループ1位・2位の相手は固定済み。3位通過チームの対戦相手は8チームの顔ぶれが決まってから確定。日本はグループF → 1位通過なら「グループCの2位」と対戦。</p>
+  </div>
+  <div id="bracket-container"></div>
+</div>
+
 <!-- BOTTOM NAV -->
 <nav class="bnav">
   <div class="bnav-inner">
@@ -589,6 +609,16 @@ footer{text-align:center;padding:18px;font-size:11px;color:var(--faint);border-t
     <button class="bnav-btn" onclick="sw(6)">
       <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
       ガイド
+      <div class="dot"></div>
+    </button>
+    <button class="bnav-btn" onclick="sw(7)">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      グループ
+      <div class="dot"></div>
+    </button>
+    <button class="bnav-btn" onclick="sw(8)">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+      山表
       <div class="dot"></div>
     </button>
   </div>
@@ -971,6 +1001,229 @@ TL.forEach((t,i)=>{
   </div>`;
 });
 
+// ═══ GROUPS DATA ═══
+const GROUPS=[
+  {id:'A', teams:[
+    {f:'🇲🇽',n:'メキシコ',us:7000,seed:1,host:true},
+    {f:'🇰🇷',n:'韓国',us:35000,seed:2},
+    {f:'🇿🇦',n:'南アフリカ',us:80000,seed:3},
+    {f:'🏴',n:'チェコ（UEFA PO D）',us:50000,seed:4},
+  ], danger:2, note:'メキシコ開催国ホーム。韓国が上位狙い'},
+  {id:'B', teams:[
+    {f:'🇨🇦',n:'カナダ',us:20000,seed:1,host:true},
+    {f:'🇨🇭',n:'スイス',us:10000,seed:2},
+    {f:'🇶🇦',n:'カタール',us:100000,seed:3},
+    {f:'🏴',n:'ボスニア（UEFA PO A）',us:50000,seed:4},
+  ], danger:2, note:'スイスが強力。カナダは開催国補正'},
+  {id:'C', teams:[
+    {f:'🇧🇷',n:'ブラジル',us:850,seed:1},
+    {f:'🇲🇦',n:'モロッコ',us:6000,seed:2},
+    {f:'🇯🇲',n:'ハイチ',us:200000,seed:3},
+    {f:'🏴󠉧󠉢󠉳󠉣󠉴󠉿',n:'スコットランド',us:20000,seed:4},
+  ], danger:4, note:'ブラジルが独走。死の山はないが、ブラジルの状態次第'},
+  {id:'D', teams:[
+    {f:'🇺🇸',n:'アメリカ',us:6500,seed:1,host:true},
+    {f:'🇦🇺',n:'オーストラリア',us:45000,seed:2},
+    {f:'🇵🇾',n:'パラグアイ',us:20000,seed:3},
+    {f:'🇹🇷',n:'トルコ',us:6500,seed:4},
+  ], danger:3, note:'アメリカ開催国。トルコがダークホース候補'},
+  {id:'E', teams:[
+    {f:'🇩🇪',n:'ドイツ',us:1400,seed:1},
+    {f:'🇪🇨',n:'エクアドル',us:8000,seed:2},
+    {f:'🇨🇮',n:'コートジボワール',us:25000,seed:3},
+    {f:'🏴',n:'キュラソー',us:150000,seed:4},
+  ], danger:4, note:'ドイツへの第一強。弱いグループでドイツは有利'},
+  {id:'F', teams:[
+    {f:'🇳🇱',n:'オランダ',us:2000,seed:1},
+    {f:'🇯🇵',n:'日本🌟',us:5000,seed:2,highlight:true},
+    {f:'🇸🇪',n:'スウェーデン',us:8000,seed:3},
+    {f:'🇹🇳',n:'チュニジア',us:50000,seed:4},
+  ], danger:3, note:'✨日本のグループ。オランダと同組。スウェーデンとの第2戦、チュニジアとの第3戦が鍵'},
+  {id:'G', teams:[
+    {f:'🇧🇪',n:'ベルギー',us:3500,seed:1},
+    {f:'🇮🇷',n:'イラン',us:50000,seed:2},
+    {f:'🇪🇬',n:'エジプト',us:30000,seed:3},
+    {f:'🇳🇿',n:'ニュージーランド',us:150000,seed:4},
+  ], danger:4, note:'ベルギー独走のグループ。死の山なし'},
+  {id:'H', teams:[
+    {f:'🇪🇸',n:'スペイン',us:450,seed:1},
+    {f:'🇺🇾',n:'ウルグアイ',us:6500,seed:2},
+    {f:'🇸🇦',n:'サウジアラビア',us:100000,seed:3},
+    {f:'🇨🇻',n:'カーボベルデ',us:200000,seed:4},
+  ], danger:4, note:'🔥死の山者候。スペインのグループからの一位通過は広いコースへの入口。ウルグアイも強力'},
+  {id:'I', teams:[
+    {f:'🇫🇷',n:'フランス',us:600,seed:1},
+    {f:'🇸🇳',n:'セネガル',us:10000,seed:2},
+    {f:'🇳🇴',n:'ノルウェー🎧',us:2800,seed:3},
+    {f:'🏴',n:'FIFAプレーオフ2',us:100000,seed:4},
+  ], danger:4, note:'🔥死の山者候。フランスプラスノルウェー。ノルウェーの穷地を注目'},
+  {id:'J', teams:[
+    {f:'🇦🇷',n:'アルゼンチン',us:850,seed:1},
+    {f:'🇦🇹',n:'オーストリア',us:10000,seed:2},
+    {f:'🇩🇿',n:'アルジェリア',us:35000,seed:3},
+    {f:'🏴',n:'ヨルダン',us:200000,seed:4},
+  ], danger:3, note:'アルゼンチングループ。オーストリアが第二強侯補'},
+  {id:'K', teams:[
+    {f:'🇵🇹',n:'ポルトガル',us:1100,seed:1},
+    {f:'🇨🇴',n:'コロンビア',us:4000,seed:2},
+    {f:'🏴',n:'ウズベキスタン',us:150000,seed:3},
+    {f:'🏴',n:'FIFAプレーオフ1',us:100000,seed:4},
+  ], danger:4, note:'ポルトガルコロンビアグループ。両失意なら大波乱あり'},
+  {id:'L', teams:[
+    {f:'🇬🇧',n:'イングランド',us:600,seed:1},
+    {f:'🇭🇷',n:'クロアチア',us:9000,seed:2},
+    {f:'🇵🇦',n:'パナマ',us:100000,seed:3},
+    {f:'🇬🇭',n:'ガーナ',us:35000,seed:4},
+  ], danger:4, note:'イングランド独走のグループ。クロアチアが第二候補'},
+];
+
+const gc=document.getElementById('groups-container');
+GROUPS.forEach(g=>{
+  const dangerLbl=['','','','⚠️ 中難度','🔥 激戦'][Math.min(g.danger,4)]||'';
+  const dangerColor=g.danger>=4?'var(--red)':g.danger>=3?'var(--amber)':'var(--green)';
+  const rows=g.teams.map(t=>{
+    const prob=p(t.us), evVal=ev(prob,t.jp||estimateJP(t.us));
+    const hl=t.highlight?'background:rgba(37,99,235,.06);':''; 
+    return `<tr style="${hl}">
+      <td style="padding:8px 12px;font-size:22px;line-height:1">${t.f}</td>
+      <td style="padding:8px 8px;font-size:12.5px;font-weight:${t.highlight?'800':'600'};color:${t.highlight?'var(--blue)':'var(--ink2)'}">${t.n}${t.host?'<span style="font-size:9px;background:#fef3c7;color:#92400e;padding:1px 5px;border-radius:3px;margin-left:5px">開催国</span>':''}</td>
+      <td style="padding:8px 8px;text-align:right;font-size:11px;color:var(--muted)">+${t.us.toLocaleString()}</td>
+    </tr>`;
+  }).join('');
+  gc.innerHTML+=`<div class="card">
+    <div class="card-h">
+      <div class="card-t"><strong style="font-size:16px;color:var(--blue)">Group ${g.id}</strong></div>
+      <span style="font-size:11px;font-weight:700;color:${dangerColor}">${dangerLbl}</span>
+    </div>
+    <table style="width:100%;border-collapse:collapse">
+      <thead><tr>
+        <th style="font-size:10px;color:var(--faint);padding:6px 12px;background:var(--surf);border-bottom:1px solid var(--border);text-align:left" colspan="2">チーム</th>
+        <th style="font-size:10px;color:var(--faint);padding:6px 8px;background:var(--surf);border-bottom:1px solid var(--border);text-align:right">海外+オッズ</th>
+      </tr></thead>
+      <tbody>${rows}</tbody>
+    </table>
+    <div style="padding:8px 12px;font-size:11px;color:var(--muted);border-top:1px solid var(--border);background:var(--surf)">${g.note}</div>
+  </div>`;
+});
+
+function estimateJP(us){
+  if(us<=500) return Math.round(100/(us+100)*100/100*6*10)/10;
+  const prob=p(us);
+  return Math.round(prob*0.65*10000)/1000; // rough estimate
+}
+
+// ═══ BRACKET / 山表 ═══
+const BRACKET_ROUNDS=[
+  {
+    round:'R32（ラウンド32）',
+    note:'グループ1位・2位の対戦は確定。3位通過チームは8チームが揃ってから決定。',
+    matches:[
+      {id:'M73',a:'2位 Grp A',b:'2位 Grp B',path:'→ QF上段の山',note:''},
+      {id:'M74',a:'1位 Grp E',b:'3位通過（A/B/C/D/F）',path:'',note:''},
+      {id:'M75',a:'1位 Grp F',b:'2位 Grp C',path:'→ QF中上の山',note:'🇯🇵 日本1位なら このカード'},
+      {id:'M76',a:'1位 Grp C',b:'2位 Grp F',path:'',note:'🇯🇵 日本2位ならこのカードに登場'},
+      {id:'M77',a:'1位 Grp I',b:'3位通過（C/D/F/G/H）',path:'',note:'🇫🇷 フランス1位なら'},
+      {id:'M78',a:'2位 Grp E',b:'2位 Grp I',path:'',note:''},
+      {id:'M79',a:'1位 Grp A',b:'3位通過（C/E/F/H/I）',path:'',note:'🇲🇽 メキシコ1位なら'},
+      {id:'M80',a:'1位 Grp L',b:'3位通過（E/H/I/J/K）',path:'',note:'🏴󠁧󠁢󠁥󠁮󠁧󠁿 イングランド1位なら'},
+      {id:'M81',a:'1位 Grp D',b:'3位通過（B/E/F/I/J）',path:'',note:'🇺🇸 アメリカ1位なら'},
+      {id:'M82',a:'1位 Grp G',b:'3位通過（A/E/H/I/J）',path:'',note:'🇧🇪 ベルギー1位なら'},
+      {id:'M83',a:'2位 Grp K',b:'2位 Grp L',path:'',note:''},
+      {id:'M84',a:'1位 Grp H',b:'2位 Grp J',path:'',note:'🇪🇸 スペイン1位なら'},
+      {id:'M85',a:'1位 Grp B',b:'3位通過（E/F/G/I/J）',path:'',note:'🇨🇦 カナダ1位なら'},
+      {id:'M86',a:'1位 Grp J',b:'2位 Grp H',path:'',note:'🇦🇷 アルゼンチン1位なら'},
+      {id:'M87',a:'1位 Grp K',b:'3位通過（D/E/I/J/L）',path:'',note:'🇵🇹 ポルトガル1位なら'},
+      {id:'M88',a:'2位 Grp D',b:'2位 Grp G',path:'',note:''},
+    ]
+  }
+];
+
+const bc=document.getElementById('bracket-container');
+
+// 日本の山を詳細表示
+bc.innerHTML+=`<div class="sec" style="margin-top:0"><div class="sec-t">🇯🇵 日本代表の対戦ルート（グループF）</div></div>
+<div class="g g2" style="margin-bottom:20px">
+  <div class="card" style="border:2px solid var(--blue)">
+    <div class="card-h"><div class="card-t" style="color:var(--blue)">✅ グループF 1位通過の場合</div></div>
+    <div class="card-b">
+      <div style="font-size:13px;font-weight:700;margin-bottom:10px">対戦ルート（予定）</div>
+      <div style="display:flex;flex-direction:column;gap:8px;font-size:12.5px;color:var(--ink2)">
+        <div style="display:flex;align-items:center;gap:8px"><span class="badge b-blue">GS</span> vs オランダ・スウェーデン・チュニジア</div>
+        <div style="display:flex;align-items:center;gap:8px"><span class="badge b-green">R32（M75）</span> vs グループC 2位（ブラジル/モロッコ/スコットランド/ハイチの2位）</div>
+        <div style="display:flex;align-items:center;gap:8px"><span class="badge b-amber">R16（QF路）</span> vs M76の勝者</div>
+        <div style="display:flex;align-items:center;gap:8px"><span class="badge b-purple">QF</span> vs M73かM74の勝者</div>
+        <div style="display:flex;align-items:center;gap:8px"><span class="badge b-red">SF</span> スペイン/フランス方面と対戦可能性</div>
+      </div>
+    </div>
+    <div style="padding:10px 14px;background:var(--blue-bg);border-top:1px solid var(--blue-br);font-size:12px;color:#1e40af">
+      💡 1位通過のR32の相手はグループCの2位。<strong>ブラジルが1位通過なら2位はモロッコ/スコットランド</strong>になりやすく、R32は比較的有利なカードが期待できる。
+    </div>
+  </div>
+  <div class="card" style="border:2px solid var(--amber)">
+    <div class="card-h"><div class="card-t" style="color:var(--amber)">⚠️ グループF 2位通過の場合</div></div>
+    <div class="card-b">
+      <div style="font-size:13px;font-weight:700;margin-bottom:10px">対戦ルート（予定）</div>
+      <div style="display:flex;flex-direction:column;gap:8px;font-size:12.5px;color:var(--ink2)">
+        <div style="display:flex;align-items:center;gap:8px"><span class="badge b-blue">GS</span> vs オランダ・スウェーデン・チュニジア</div>
+        <div style="display:flex;align-items:center;gap:8px"><span class="badge b-amber">R32（M76）</span> vs グループC 1位（ブラジル）</div>
+        <div style="display:flex;align-items:center;gap:8px"><span class="badge b-red">難関</span> ブラジルとR32で対戦の可能性大</div>
+      </div>
+    </div>
+    <div style="padding:10px 14px;background:var(--amber-bg);border-top:1px solid var(--amber-br);font-size:12px;color:#92400e">
+      ⚠️ 2位通過の場合、<strong>R32でブラジルと対戦</strong>する可能性が高い。1位通過が強く推奨される。オランダ戦（初戦）の結果が全てを決める。
+    </div>
+  </div>
+</div>`;
+
+// 難所グループ難易度
+bc.innerHTML+=`<div class="sec"><div class="sec-t">⚖️ グループ難易度ランキング</div></div>
+<div class="card" style="margin-bottom:16px">
+  <div class="tw"><table>
+    <thead><tr><th>グループ</th><th>主要チーム</th><th class="r">グループ平均確率</th><th class="c">難易度</th><th>注目ポイント</th></tr></thead>
+    <tbody id="group-diff"></tbody>
+  </table></div>
+</div>`;
+
+const gdiff=document.getElementById('group-diff');
+const groupDifficulty=GROUPS.map(g=>{
+  const totalProb=g.teams.reduce((s,t)=>s+p(t.us),0);
+  return {...g, avgProb:totalProb/g.teams.length, topTeamUs:g.teams[0].us};
+}).sort((a,b)=>a.topTeamUs-b.topTeamUs);
+
+groupDifficulty.forEach((g,i)=>{
+  const diff=g.danger>=4?['b-red','🔥 激戦']:g.danger>=3?['b-amber','⚠️ 中難度']:['b-green','✅ 比較易'];
+  const topTeams=g.teams.slice(0,2).map(t=>`${t.f}${t.n}`).join('・');
+  gdiff.innerHTML+=`<tr>
+    <td><strong style="color:var(--blue)">Grp ${g.id}</strong></td>
+    <td style="font-size:12px">${topTeams}</td>
+    <td class="r" style="font-size:12px">${(g.avgProb*100).toFixed(2)}%</td>
+    <td class="c"><span class="badge ${diff[0]}">${diff[1]}</span></td>
+    <td style="font-size:11px;color:var(--muted)">${g.note}</td>
+  </tr>`;
+});
+
+// R32 対戦表
+bc.innerHTML+=`<div class="sec"><div class="sec-t">🗓 R32（ラウンド32）確定対戦表</div><span class="badge b-blue">16試合</span></div>
+<div class="card">
+  <div class="card-h"><div class="card-t">グループ1・2位の対戦は確定 ／ 3位は8チーム確定後に決定</div></div>
+  <div class="tw"><table>
+    <thead><tr>
+      <th>試合No.</th><th>チームA</th><th style="text-align:center">vs</th><th>チームB</th><th>注目ポイント</th>
+    </tr></thead>
+    <tbody>${BRACKET_ROUNDS[0].matches.map(m=>{
+      const isJpn=m.note.includes('日本');
+      return `<tr style="${isJpn?'background:rgba(37,99,235,.05);border-left:3px solid var(--blue);':''}">      
+        <td><strong style="color:var(--muted)">${m.id}</strong></td>
+        <td style="font-weight:${isJpn?'700':'500'}">${m.a}</td>
+        <td style="text-align:center;color:var(--faint)">vs</td>
+        <td style="font-weight:${isJpn?'700':'500'}">${m.b}</td>
+        <td style="font-size:11px;color:${isJpn?'var(--blue)':'var(--muted)'}">${m.note}</td>
+      </tr>`;
+    }).join('')}</tbody>
+  </table></div>
+  <div class="score-note-box">${BRACKET_ROUNDS[0].note}</div>
+</div>`;
+
 // ═══ TAB SWITCH ═══
 function sw(i){
   document.querySelectorAll('.tb').forEach((b,j)=>b.classList.toggle('on',j===i));
@@ -978,6 +1231,24 @@ function sw(i){
   document.querySelectorAll('.pg').forEach((p,j)=>p.classList.toggle('on',j===i));
   window.scrollTo({top:0,behavior:'smooth'});
 }
+
+// ═══ GROUP EV UPDATE (draw反映) ═══
+// 日本: Grp F → オランダ・スウェーデン・チュニジア (中難度グループ) EV微改善
+// スペイン: Grp H → ウルグアイ・サウジ・カーボベルデ (最弱グループ) EV向上
+// フランス: Grp I → ノルウェー同組🔥 激戦
+// イングランド: Grp L → クロアチア・パナマ・ガーナ (比較的易しい) EV向上
+const GROUP_EV_NOTES={
+  'スペイン':    {note:'Grp H → ウルグアイ・サウジ・カーボベルデ。最弱グループでほぼ消化魚。EV《改善》',evMod:0.03},
+  'イングランド':   {note:'Grp L → クロアチア・パナマ・ガーナ。比較的消化グループ。EV《微改善》',evMod:0.02},
+  'フランス':     {note:'Grp I → ノルウェー同組🔥。グループ第二陨の山。EV《要注意》',evMod:-0.02},
+  'ノルウェー':   {note:'Grp I → フランス同組🔥。グループ2位通過は欲しい。EV《要注意》',evMod:-0.02},
+  'アルゼンチン': {note:'Grp J → オーストリア・アルジェリア・ヨルダン。比較的消化グループ。EV《微改善》',evMod:0.02},
+  'ドイツ':      {note:'Grp E → エクアドル・コートジボワール・キュラソー。比較的消化グループ。EV《微改善》',evMod:0.02},
+  '日本':      {note:'Grp F → オランダ・スウェーデン・チュニジア。オランダが強敵だがスウェーデン・チュニジアは左言なし。實力的には突破可能',evMod:0.01},
+  'コロンビア':   {note:'Grp K → ポルトガル同組。ポルトガルが強いが2位通過の可能性大',evMod:0.00},
+  'ブラジル':     {note:'Grp C → モロッコ・スコットランド・ハイチ。比較的消化グループ。EV《微改善》',evMod:0.02},
+};
+// (EV修正は説明のためのノート市場。実際の読み変えは各自で判断を)
 
 // ═══ SWIPE ═══
 (()=>{
