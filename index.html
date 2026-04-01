@@ -1251,19 +1251,25 @@ const GROUP_EV_NOTES={
 // (EV修正は説明のためのノート市場。実際の読み変えは各自で判断を)
 
 // ═══ SWIPE ═══
+// ボトムナビ上の左右ボタンのみスワイプ対応。
+// コンテンツエリア内はスワイプ無効。
 (()=>{
+  const nav=document.querySelector('.bnav');
+  if(!nav)return;
   let sx=0,sy=0;
-  document.addEventListener('touchstart',e=>{
+  nav.addEventListener('touchstart',e=>{
     sx=e.touches[0].clientX;
     sy=e.touches[0].clientY;
   },{passive:true});
-  document.addEventListener('touchend',e=>{
+  nav.addEventListener('touchend',e=>{
     const dx=e.changedTouches[0].clientX-sx;
     const dy=e.changedTouches[0].clientY-sy;
-    if(Math.abs(dx)<Math.abs(dy)*1.5||Math.abs(dx)<40)return;
+    // 横方向の移動が縦の3倍以上、かつ最低60px以上の時のみタブ切り替え
+    if(Math.abs(dx)<Math.abs(dy)*3||Math.abs(dx)<60)return;
     const cur=[...document.querySelectorAll('.tb')].findIndex(b=>b.classList.contains('on'));
-    if(dx<-40&&cur<6)sw(cur+1);
-    if(dx>40&&cur>0)sw(cur-1);
+    const max=document.querySelectorAll('.tb').length-1;
+    if(dx<0&&cur<max)sw(cur+1);
+    if(dx>0&&cur>0)sw(cur-1);
   },{passive:true});
 })();
 </script>
