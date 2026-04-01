@@ -3,191 +3,215 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>W杯2026 完全予想ガイド | 期待値ベース分析</title>
+<title>W杯2026 EV追跡システム</title>
 <style>
 :root{
-  --bg:#f0f2f8;--white:#fff;--surf2:#f8fafc;--border:#e2e8f0;--border2:#cbd5e1;
+  --bg:#f0f3f9;--white:#fff;--surf:#f8fafc;--border:#e2e8f0;--border2:#cbd5e1;
   --ink:#0f172a;--ink2:#334155;--muted:#64748b;--faint:#94a3b8;
   --blue:#2563eb;--blue-bg:#eff6ff;--blue-br:#bfdbfe;
   --green:#059669;--green-bg:#ecfdf5;--green-br:#a7f3d0;
   --red:#dc2626;--red-bg:#fef2f2;--red-br:#fecaca;
   --amber:#d97706;--amber-bg:#fffbeb;--amber-br:#fde68a;
   --purple:#7c3aed;--purple-bg:#f5f3ff;--purple-br:#ddd6fe;
-  --cyan:#0891b2;--cyan-bg:#ecfeff;
+  --cyan:#0891b2;--cyan-bg:#ecfeff;--cyan-br:#a5f3fc;
   --sh:0 1px 3px rgba(15,23,42,.07),0 1px 2px rgba(15,23,42,.04);
-  --sh-md:0 4px 16px rgba(15,23,42,.09);--r:12px;--r-sm:8px;
+  --sh-md:0 4px 20px rgba(15,23,42,.10);--r:12px;--r-sm:8px;
 }
 *{margin:0;padding:0;box-sizing:border-box;}
 body{background:var(--bg);color:var(--ink);font-family:-apple-system,'Hiragino Sans','Noto Sans JP','Segoe UI',sans-serif;font-size:14px;-webkit-font-smoothing:antialiased;}
 
-/* HEADER */
-header{background:var(--ink);color:#fff;padding:0 24px;}
-.hdr{max-width:1320px;margin:0 auto;padding:16px 0;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;}
-.hdr h1{font-size:clamp(17px,3vw,23px);font-weight:900;letter-spacing:-.5px;}
-.hdr h1 span{color:#fbbf24;}
-.hdr-sub{font-size:11px;color:rgba(255,255,255,.45);margin-top:2px;}
-.hdr-pills{display:flex;gap:7px;flex-wrap:wrap;}
-.hdr-pill{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:20px;padding:3px 11px;font-size:11px;font-weight:600;color:rgba(255,255,255,.75);}
-.hdr-pill.hot{background:rgba(251,191,36,.2);border-color:rgba(251,191,36,.4);color:#fbbf24;}
+/* ─ HEADER ─ */
+header{background:linear-gradient(135deg,#0f172a 0%,#1e293b 100%);color:#fff;padding:0 24px;box-shadow:0 2px 20px rgba(0,0,0,.3);}
+.hdr{max-width:1400px;margin:0 auto;padding:14px 0;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;}
+.hdr-l h1{font-size:clamp(16px,2.5vw,22px);font-weight:900;letter-spacing:-.5px;display:flex;align-items:center;gap:8px;}
+.hdr-l h1 .hl{color:#fbbf24;}
+.hdr-sub{font-size:11px;color:rgba(255,255,255,.4);margin-top:3px;}
+.hdr-r{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.pill{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:20px;padding:3px 11px;font-size:11px;font-weight:600;color:rgba(255,255,255,.7);}
+.pill.hot{background:rgba(251,191,36,.15);border-color:rgba(251,191,36,.35);color:#fbbf24;}
+.pill.live{background:rgba(5,150,105,.2);border-color:rgba(5,150,105,.4);color:#34d399;display:flex;align-items:center;gap:4px;}
+.pill.live::before{content:'';width:6px;height:6px;border-radius:50%;background:#34d399;animation:blink 1.2s infinite;}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:.3;}}
 
-/* TABS */
-.tab-bar{background:var(--white);border-bottom:2px solid var(--border);position:sticky;top:0;z-index:50;box-shadow:0 2px 8px rgba(15,23,42,.06);}
-.tab-inner{max-width:1320px;margin:0 auto;padding:0 20px;display:flex;gap:0;overflow-x:auto;scrollbar-width:none;}
-.tab-inner::-webkit-scrollbar{display:none;}
-.tab-btn{
-  white-space:nowrap;padding:12px 18px;font-size:13px;font-weight:600;
-  color:var(--muted);border:none;background:none;cursor:pointer;
-  border-bottom:2px solid transparent;margin-bottom:-2px;
-  transition:color .15s,border-color .15s;display:flex;align-items:center;gap:6px;
-}
-.tab-btn:hover{color:var(--ink2);}
-.tab-btn.active{color:var(--blue);border-bottom-color:var(--blue);}
-.tab-btn .tab-badge{font-size:9px;background:var(--blue-bg);color:var(--blue);padding:1px 6px;border-radius:10px;font-weight:700;}
-.tab-btn.active .tab-badge{background:var(--blue);color:#fff;}
+/* ─ TAB BAR ─ */
+.tabbar{background:var(--white);border-bottom:2px solid var(--border);position:sticky;top:0;z-index:80;box-shadow:0 2px 10px rgba(15,23,42,.06);}
+.tabbar-inner{max-width:1400px;margin:0 auto;padding:0 20px;display:flex;overflow-x:auto;scrollbar-width:none;gap:0;}
+.tabbar-inner::-webkit-scrollbar{display:none;}
+.tb{white-space:nowrap;padding:11px 16px;font-size:12.5px;font-weight:600;color:var(--muted);border:none;background:none;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;transition:all .15s;display:flex;align-items:center;gap:5px;flex-shrink:0;}
+.tb:hover{color:var(--ink2);}
+.tb.on{color:var(--blue);border-bottom-color:var(--blue);}
+.tb .cnt{font-size:9px;background:var(--surf);border:1px solid var(--border);color:var(--muted);padding:1px 5px;border-radius:8px;font-weight:700;}
+.tb.on .cnt{background:var(--blue);border-color:var(--blue);color:#fff;}
 
-/* PAGES */
-.page{display:none;max-width:1320px;margin:0 auto;padding:24px 20px;}
-.page.active{display:block;}
+/* ─ PAGE ─ */
+.pg{display:none;max-width:1400px;margin:0 auto;padding:22px 20px;}
+.pg.on{display:block;}
 
-/* SECTION */
-.sec-hd{display:flex;align-items:center;justify-content:space-between;margin:24px 0 12px;}
-.sec-hd:first-child{margin-top:0;}
-.sec-title{font-size:14px;font-weight:800;color:var(--ink);display:flex;align-items:center;gap:8px;}
-.sec-title svg{width:15px;height:15px;color:var(--muted);}
-.sec-badge{font-size:11px;font-weight:700;padding:3px 10px;background:var(--blue-bg);color:var(--blue);border-radius:20px;}
-.sec-note{font-size:11px;color:var(--muted);}
+/* ─ SECTION ─ */
+.sec{margin:22px 0 12px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+.sec:first-child{margin-top:0;}
+.sec-t{font-size:13.5px;font-weight:800;color:var(--ink);display:flex;align-items:center;gap:7px;}
+.sec-t svg{width:15px;height:15px;color:var(--muted);}
+.sec-r{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.badge{display:inline-flex;align-items:center;gap:3px;padding:2px 9px;border-radius:20px;font-size:11px;font-weight:700;white-space:nowrap;}
+.b-blue{background:var(--blue-bg);color:var(--blue);border:1px solid var(--blue-br);}
+.b-green{background:var(--green-bg);color:var(--green);border:1px solid var(--green-br);}
+.b-red{background:var(--red-bg);color:var(--red);border:1px solid var(--red-br);}
+.b-amber{background:var(--amber-bg);color:var(--amber);border:1px solid var(--amber-br);}
+.b-purple{background:var(--purple-bg);color:var(--purple);border:1px solid var(--purple-br);}
+.b-gray{background:var(--surf);color:var(--muted);border:1px solid var(--border);}
+.b-hot{background:#fff7ed;color:#c2410c;border:1px solid #fed7aa;}
 
-/* GRID */
+/* ─ GRID ─ */
 .g{display:grid;gap:14px;}
-.g2{grid-template-columns:repeat(2,1fr);}
-.g3{grid-template-columns:repeat(3,1fr);}
 .g4{grid-template-columns:repeat(4,1fr);}
+.g3{grid-template-columns:repeat(3,1fr);}
+.g2{grid-template-columns:repeat(2,1fr);}
 
-/* KPI */
-.kpi{background:var(--white);border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--sh);padding:16px 18px;position:relative;overflow:hidden;}
+/* ─ KPI ─ */
+.kpi{background:var(--white);border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--sh);padding:16px 18px;position:relative;overflow:hidden;transition:box-shadow .2s,transform .15s;}
+.kpi:hover{box-shadow:var(--sh-md);transform:translateY(-1px);}
 .kpi::after{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:var(--r) var(--r) 0 0;}
-.kpi-blue::after{background:linear-gradient(90deg,var(--blue),#60a5fa);}
-.kpi-green::after{background:linear-gradient(90deg,var(--green),#34d399);}
-.kpi-amber::after{background:linear-gradient(90deg,var(--amber),#fbbf24);}
-.kpi-purple::after{background:linear-gradient(90deg,var(--purple),#a78bfa);}
-.kpi-lbl{font-size:11px;color:var(--muted);font-weight:600;margin-bottom:5px;letter-spacing:.3px;}
-.kpi-val{font-size:24px;font-weight:900;letter-spacing:-1px;color:var(--ink);}
-.kpi-val.green{color:var(--green);}
-.kpi-val.amber{color:var(--amber);}
-.kpi-sub{font-size:11px;color:var(--muted);margin-top:4px;}
+.kpi-b::after{background:linear-gradient(90deg,var(--blue),#60a5fa);}
+.kpi-g::after{background:linear-gradient(90deg,var(--green),#34d399);}
+.kpi-a::after{background:linear-gradient(90deg,var(--amber),#fbbf24);}
+.kpi-p::after{background:linear-gradient(90deg,var(--purple),#a78bfa);}
+.kpi-r::after{background:linear-gradient(90deg,var(--red),#f87171);}
+.kpi-c::after{background:linear-gradient(90deg,var(--cyan),#22d3ee);}
+.kpi-lbl{font-size:11px;color:var(--muted);font-weight:600;letter-spacing:.3px;margin-bottom:5px;}
+.kpi-v{font-size:24px;font-weight:900;letter-spacing:-1px;color:var(--ink);}
+.kpi-v.green{color:var(--green);}
+.kpi-v.amber{color:var(--amber);}
+.kpi-v.blue{color:var(--blue);}
+.kpi-v.red{color:var(--red);}
+.kpi-sub{font-size:11px;color:var(--muted);margin-top:4px;display:flex;align-items:center;gap:4px;}
 
-/* CARD */
+/* ─ CARD ─ */
 .card{background:var(--white);border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--sh);overflow:hidden;}
-.card-hd{padding:13px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
-.card-title{font-size:12px;font-weight:700;color:var(--ink2);display:flex;align-items:center;gap:6px;}
-.card-title svg{width:13px;height:13px;}
-.card-body{padding:14px 16px;}
+.card-h{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+.card-t{font-size:12px;font-weight:700;color:var(--ink2);display:flex;align-items:center;gap:6px;}
+.card-t svg{width:13px;height:13px;}
+.card-b{padding:14px 16px;}
 
-/* TABLE */
-.tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;}
+/* ─ TABLE ─ */
+.tw{overflow-x:auto;-webkit-overflow-scrolling:touch;}
 table{width:100%;border-collapse:collapse;white-space:nowrap;}
-thead th{font-size:10px;font-weight:700;color:var(--faint);text-transform:uppercase;letter-spacing:.5px;padding:8px 13px;background:var(--surf2);border-bottom:1px solid var(--border);text-align:left;}
-thead th.r{text-align:right;}
-thead th.c{text-align:center;}
-tbody td{padding:10px 13px;border-bottom:1px solid var(--border);font-size:12.5px;}
+thead th{font-size:10px;font-weight:700;color:var(--faint);text-transform:uppercase;letter-spacing:.5px;padding:8px 13px;background:var(--surf);border-bottom:1px solid var(--border);text-align:left;position:sticky;top:0;}
+th.r,td.r{text-align:right;}
+th.c,td.c{text-align:center;}
+tbody td{padding:10px 13px;border-bottom:1px solid var(--border);font-size:12.5px;vertical-align:middle;}
 tbody tr:last-child td{border-bottom:none;}
-tbody tr:hover td{background:#fafbff;}
-.r{text-align:right;}.c{text-align:center;}
+tbody tr:hover td{background:#f8f9ff;}
+.sortable{cursor:pointer;user-select:none;}
+.sortable:hover{color:var(--blue);}
 
-/* TEAM CELL */
+/* ─ TEAM CELL ─ */
 .tc{display:flex;align-items:center;gap:9px;}
 .fl{font-size:20px;line-height:1;}
 .tn{font-weight:700;font-size:13px;}
 .ts{font-size:10px;color:var(--faint);}
 
-/* BADGES */
-.badge{display:inline-flex;align-items:center;gap:3px;padding:2px 9px;border-radius:20px;font-size:11px;font-weight:700;}
-.b-green{background:var(--green-bg);color:var(--green);border:1px solid var(--green-br);}
-.b-amber{background:var(--amber-bg);color:var(--amber);border:1px solid var(--amber-br);}
-.b-red{background:var(--red-bg);color:var(--red);border:1px solid var(--red-br);}
-.b-blue{background:var(--blue-bg);color:var(--blue);border:1px solid var(--blue-br);}
-.b-purple{background:var(--purple-bg);color:var(--purple);border:1px solid var(--purple-br);}
-.b-gray{background:var(--surf2);color:var(--muted);border:1px solid var(--border);}
-.ev-hot{background:#fff7ed;color:#c2410c;border:1px solid #fed7aa;}
-
-/* TIER */
+/* ─ TIER ─ */
 .tier{display:inline-flex;padding:2px 7px;border-radius:4px;font-size:10px;font-weight:800;letter-spacing:.3px;}
-.t-s{background:#fef3c7;color:#92400e;}
-.t-a{background:#dbeafe;color:#1e40af;}
-.t-b{background:#f0fdf4;color:#166534;}
-.t-c{background:#f5f3ff;color:#5b21b6;}
-.t-d{background:var(--surf2);color:var(--muted);}
+.t-S{background:#fef3c7;color:#92400e;}
+.t-A{background:#dbeafe;color:#1e40af;}
+.t-B{background:#f0fdf4;color:#166534;}
+.t-C{background:#f5f3ff;color:#5b21b6;}
+.t-D{background:var(--surf);color:var(--muted);}
 
-/* BAR */
-.pbar{min-width:80px;}
-.pbar-n{font-size:11px;font-weight:600;color:var(--ink2);margin-bottom:3px;}
-.pbar-t{height:5px;background:var(--border);border-radius:3px;overflow:hidden;}
-.pbar-f{height:100%;border-radius:3px;}
+/* ─ EV BAR ─ */
+.ev-bar{display:flex;align-items:center;gap:8px;min-width:120px;}
+.ev-num{font-size:13px;font-weight:800;min-width:44px;text-align:right;}
+.ev-track{flex:1;height:6px;background:var(--border);border-radius:3px;overflow:visible;position:relative;}
+.ev-fill{height:100%;border-radius:3px;transition:width .4s;}
+.ev-zero{position:absolute;top:-3px;width:2px;height:12px;background:var(--border2);border-radius:1px;}
 
-/* ALERT */
-.alert{background:var(--amber-bg);border:1px solid var(--amber-br);border-radius:var(--r);padding:11px 15px;display:flex;gap:9px;margin-bottom:18px;align-items:flex-start;}
-.alert svg{width:15px;height:15px;color:var(--amber);flex-shrink:0;margin-top:1px;}
-.alert p{font-size:12px;color:#92400e;line-height:1.6;}
+/* ─ PROB BAR ─ */
+.pb{min-width:70px;}
+.pb-n{font-size:11px;font-weight:600;color:var(--ink2);margin-bottom:3px;}
+.pb-t{height:5px;background:var(--border);border-radius:3px;overflow:hidden;}
+.pb-f{height:100%;border-radius:3px;}
 
-/* EV BOX */
-.ev-box{background:var(--blue-bg);border:1px solid var(--blue-br);border-radius:var(--r);padding:14px 18px;margin-bottom:18px;}
-.ev-box h3{font-size:13px;font-weight:800;color:var(--blue);margin-bottom:7px;}
-.ev-box p{font-size:12px;color:#1e40af;line-height:1.8;}
-.ev-box code{background:#dbeafe;padding:1px 5px;border-radius:4px;font-family:monospace;font-size:11px;}
+/* ─ FILTER BAR ─ */
+.fbar{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;}
+.fbtn{padding:4px 12px;border-radius:20px;font-size:11px;font-weight:600;border:1px solid var(--border);background:var(--white);color:var(--muted);cursor:pointer;transition:all .12s;}
+.fbtn:hover{border-color:var(--border2);color:var(--ink2);}
+.fbtn.on{background:var(--blue);border-color:var(--blue);color:#fff;}
 
-/* TARGET CARDS */
-.target-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px;}
-.tc-card{border-radius:var(--r);padding:14px;border:2px solid;}
-.tc-card.buy{background:#f0fdf8;border-color:#34d399;}
-.tc-card.watch{background:#fffdf0;border-color:#fbbf24;}
-.tc-card.avoid{background:#fff5f5;border-color:#fca5a5;}
-.tc-lbl{font-size:9px;font-weight:900;letter-spacing:.6px;margin-bottom:6px;}
-.buy .tc-lbl{color:var(--green);}
-.watch .tc-lbl{color:var(--amber);}
-.avoid .tc-lbl{color:var(--red);}
-.tc-team{font-size:17px;font-weight:900;margin-bottom:4px;}
-.tc-reason{font-size:11.5px;color:var(--ink2);line-height:1.7;}
-.tc-odds{font-size:10px;color:var(--muted);margin-top:7px;padding-top:7px;border-top:1px solid var(--border);}
+/* ─ ALERT / INFO BOX ─ */
+.info{border-radius:var(--r);padding:12px 15px;display:flex;gap:9px;margin-bottom:16px;align-items:flex-start;}
+.info svg{width:15px;height:15px;flex-shrink:0;margin-top:1px;}
+.info p{font-size:12px;line-height:1.7;}
+.info-amber{background:var(--amber-bg);border:1px solid var(--amber-br);}
+.info-amber svg,.info-amber p{color:#92400e;}
+.info-blue{background:var(--blue-bg);border:1px solid var(--blue-br);}
+.info-blue svg,.info-blue p{color:#1e40af;}
+.info-green{background:var(--green-bg);border:1px solid var(--green-br);}
+.info-green svg,.info-green p{color:#065f46;}
+.info p strong{font-weight:700;}
+.info p code{font-family:monospace;font-size:11px;padding:1px 5px;border-radius:4px;}
+.info-blue p code{background:#dbeafe;}
 
-/* PRODUCT CARDS (toto/WINNER商品) */
-.prod-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;}
-.prod-card{background:var(--white);border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--sh);overflow:hidden;}
-.prod-hd{padding:13px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;}
-.prod-num{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;flex-shrink:0;}
-.prod-title{font-size:13px;font-weight:800;color:var(--ink);}
-.prod-sub{font-size:10px;color:var(--muted);margin-top:1px;}
-.prod-body{padding:13px 16px;font-size:12px;color:var(--ink2);line-height:1.7;}
-.prod-tag{display:inline-flex;padding:2px 7px;border-radius:4px;font-size:10px;font-weight:700;margin-right:4px;margin-top:4px;}
+/* ─ SUMMARY ROWS ─ */
+.sum-row{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;border-bottom:1px solid var(--border);}
+.sum-row:last-child{border-bottom:none;}
+.sum-l{font-size:12.5px;font-weight:600;color:var(--ink2);display:flex;align-items:center;gap:7px;}
+.sum-l svg{width:12px;height:12px;color:var(--muted);}
+.sum-r{display:flex;align-items:center;gap:8px;}
 
-/* JAPAN RESULT TABLE */
-.jpn-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px;}
-.jpn-row{background:var(--white);border:1px solid var(--border);border-radius:var(--r-sm);padding:12px 14px;display:flex;align-items:center;justify-content:space-between;box-shadow:var(--sh);}
-.jpn-result{font-size:13px;font-weight:700;color:var(--ink);}
-.jpn-meta{font-size:10px;color:var(--muted);margin-top:2px;}
-.jpn-odds{text-align:right;}
-.jpn-odds-num{font-size:16px;font-weight:900;}
-.jpn-odds-sub{font-size:10px;color:var(--muted);}
+/* ─ MARKET CARD ─ */
+.mkt-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px;}
+.mkt{background:var(--white);border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--sh);overflow:hidden;transition:box-shadow .15s,transform .15s;}
+.mkt:hover{box-shadow:var(--sh-md);transform:translateY(-1px);}
+.mkt-h{padding:12px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:9px;}
+.mkt-num{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;flex-shrink:0;}
+.mkt-title{font-size:13px;font-weight:800;}
+.mkt-sub{font-size:10px;color:var(--muted);margin-top:1px;}
+.mkt-b{padding:12px 14px;font-size:12px;color:var(--ink2);line-height:1.75;}
+.mkt-tags{margin-top:9px;display:flex;flex-wrap:wrap;gap:4px;}
+.mkt-tag{padding:2px 7px;border-radius:4px;font-size:10px;font-weight:700;}
+.mkt-f{padding:8px 14px;border-top:1px solid var(--border);background:var(--surf);display:flex;align-items:center;justify-content:space-between;}
+.mkt-f .lbl{font-size:10px;color:var(--muted);font-weight:600;}
+.mkt-f .val{font-size:12px;font-weight:800;}
 
-/* SCORE TABLE */
-.score-note{font-size:12px;color:var(--muted);line-height:1.8;padding:14px 16px;background:var(--surf2);border-top:1px solid var(--border);}
+/* ─ JAPAN RESULT ─ */
+.jpn-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;}
+.jr{background:var(--white);border:1px solid var(--border);border-radius:var(--r-sm);padding:11px 14px;display:flex;align-items:center;justify-content:space-between;box-shadow:var(--sh);transition:box-shadow .15s;}
+.jr:hover{box-shadow:var(--sh-md);}
+.jr.hot{border:2px solid var(--amber);background:var(--amber-bg);}
+.jr.best{border:2px solid var(--green);background:var(--green-bg);}
+.jr-l .name{font-size:12.5px;font-weight:700;}
+.jr-l .prob{font-size:10px;color:var(--muted);margin-top:2px;}
+.jr-r{text-align:right;}
+.jr-r .odds{font-size:17px;font-weight:900;}
+.jr-r .ev{font-size:10px;margin-top:2px;}
 
-/* FINAL CARD */
-.final-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;}
-.final-card{background:var(--white);border:1px solid var(--border);border-radius:var(--r-sm);padding:12px 14px;box-shadow:var(--sh);display:flex;align-items:center;gap:10px;}
-.final-flag{font-size:24px;}
-.final-name{font-size:13px;font-weight:700;}
-.final-sub{font-size:10px;color:var(--muted);}
-.final-odds{margin-left:auto;text-align:right;}
-.final-odds-num{font-size:15px;font-weight:900;}
-.final-odds-ev{font-size:10px;margin-top:2px;}
+/* ─ FINAL COMBOS ─ */
+.combo-row{display:flex;align-items:center;gap:12px;padding:10px 13px;border-bottom:1px solid var(--border);}
+.combo-row:last-child{border-bottom:none;}
+.combo-row:hover{background:var(--surf);}
+.combo-teams{font-size:13px;font-weight:700;flex:1;}
+.combo-note{font-size:11px;color:var(--muted);flex:1;}
 
-/* FOOTER */
-footer{text-align:center;padding:20px;font-size:11px;color:var(--faint);border-top:1px solid var(--border);margin-top:8px;}
+/* ─ SCORE TABLE ─ */
+.score-note-box{padding:12px 14px;background:var(--surf);border-top:1px solid var(--border);font-size:12px;color:var(--muted);line-height:1.8;}
 
-/* RESPONSIVE */
-@media(max-width:1024px){.g4{grid-template-columns:repeat(2,1fr);}}
-@media(max-width:768px){.g3{grid-template-columns:repeat(2,1fr);}.g2{grid-template-columns:1fr;}}
-@media(max-width:480px){.g4,.g3{grid-template-columns:1fr;}main,#page1,#page2,#page3,#page4,#page5{padding:14px 12px;}}
+/* ─ LEADERBOARD ─ */
+.lb-row{display:flex;align-items:center;gap:10px;padding:10px 13px;border-bottom:1px solid var(--border);}
+.lb-row:last-child{border-bottom:none;}
+.lb-row:hover{background:var(--surf);}
+.lb-rank{font-size:13px;font-weight:900;color:var(--faint);width:22px;flex-shrink:0;}
+.lb-rank.gold{color:#d97706;}
+.lb-rank.silver{color:#64748b;}
+.lb-rank.bronze{color:#c2410c;}
+
+/* ─ FOOTER ─ */
+footer{text-align:center;padding:18px;font-size:11px;color:var(--faint);border-top:1px solid var(--border);margin-top:8px;}
+
+/* ─ RESPONSIVE ─ */
+@media(max-width:1100px){.g4{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:768px){.g3{grid-template-columns:repeat(2,1fr);}.g2{grid-template-columns:1fr;}.g4{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:480px){.g4,.g3{grid-template-columns:1fr;}.pg{padding:14px 12px;}}
 </style>
 </head>
 <body>
@@ -195,538 +219,666 @@ footer{text-align:center;padding:20px;font-size:11px;color:var(--faint);border-t
 <!-- HEADER -->
 <header>
   <div class="hdr">
-    <div>
-      <h1>⚽ W杯<span>2026</span> 完全予想ガイド</h1>
-      <div class="hdr-sub">海外ブックメーカー × 日本WINNER 期待値ベース分析 ／ 2026.4.1更新</div>
+    <div class="hdr-l">
+      <h1>⚽ W杯2026 <span class="hl">EV追跡</span>システム</h1>
+      <div class="hdr-sub">海外ブックメーカー確率 × 期待値リアルタイム計算 ／ 2026.4.1更新 ／ 日本発売内容は確定次第更新予定</div>
     </div>
-    <div class="hdr-pills">
-      <span class="hdr-pill hot">🔥 スペイン最有力</span>
-      <span class="hdr-pill">48カ国出場</span>
-      <span class="hdr-pill">決勝 7/19</span>
-      <span class="hdr-pill">WINNER 5種類</span>
+    <div class="hdr-r">
+      <span class="pill live">LIVE更新中</span>
+      <span class="pill hot">🔥 スペイン最有力</span>
+      <span class="pill">48カ国出場</span>
+      <span class="pill">決勝 7/19</span>
     </div>
   </div>
 </header>
 
 <!-- TAB BAR -->
-<div class="tab-bar">
-  <div class="tab-inner">
-    <button class="tab-btn active" onclick="switchTab(0)">
-      📊 概要 <span class="tab-badge">EV分析</span>
-    </button>
-    <button class="tab-btn" onclick="switchTab(1)">
-      🏆 優勝予想（開幕期）<span class="tab-badge">48カ国</span>
-    </button>
-    <button class="tab-btn" onclick="switchTab(2)">
-      🏆 優勝予想（ベスト16）<span class="tab-badge">16カ国</span>
-    </button>
-    <button class="tab-btn" onclick="switchTab(3)">
-      🇯🇵 日本代表成績予想 <span class="tab-badge">13択</span>
-    </button>
-    <button class="tab-btn" onclick="switchTab(4)">
-      ⚔️ 決勝カード予想 <span class="tab-badge">2カ国</span>
-    </button>
-    <button class="tab-btn" onclick="switchTab(5)">
-      ⚽ 1試合予想 <span class="tab-badge">全104試合</span>
-    </button>
+<div class="tabbar">
+  <div class="tabbar-inner">
+    <button class="tb on" onclick="sw(0)">📊 EV総合ランキング <span class="cnt">ALL</span></button>
+    <button class="tb" onclick="sw(1)">🏆 優勝予想（開幕期） <span class="cnt">48</span></button>
+    <button class="tb" onclick="sw(2)">🔄 優勝予想（ベスト16） <span class="cnt">16</span></button>
+    <button class="tb" onclick="sw(3)">🇯🇵 日本代表成績 <span class="cnt">13択</span></button>
+    <button class="tb" onclick="sw(4)">⚔️ 決勝カード <span class="cnt">28通り</span></button>
+    <button class="tb" onclick="sw(5)">⚽ 1試合予想 <span class="cnt">104試合</span></button>
+    <button class="tb" onclick="sw(6)">📋 商品ガイド <span class="cnt">TBD</span></button>
   </div>
 </div>
 
-<!-- ══════════════════════════════════════════
-     PAGE 0: 概要
-══════════════════════════════════════════ -->
-<div class="page active" id="page0">
-
-  <div class="alert">
+<!-- ═══ PAGE 0: EV総合ランキング ═══ -->
+<div class="pg on" id="p0">
+  <div class="info info-amber">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-    <p><strong>免責事項：</strong>本サイトは情報提供を目的としています。日本でのスポーツ投票はtoto/WINNERなど公営競技の範囲内でお楽しみください。期待値は理論値であり実際の結果を保証するものではありません。</p>
+    <p><strong>⚠️ 免責事項：</strong>本サイトは分析情報の提供を目的としています。スポーツくじへの参加は公営競技の範囲内で自己責任にて行ってください。日本での具体的な発売内容・倍率は未確定のため、日本推定倍率は2022年大会実績をベースにした試算値です。</p>
   </div>
 
-  <div class="g g4">
-    <div class="kpi kpi-blue">
-      <div class="kpi-lbl">出場国数</div>
-      <div class="kpi-val">48カ国</div>
-      <div class="kpi-sub">史上最多・3カ国共催</div>
+  <!-- KPI -->
+  <div class="g g4" style="margin-bottom:16px;">
+    <div class="kpi kpi-g">
+      <div class="kpi-lbl">最高EV（開幕期）</div>
+      <div class="kpi-v green">+24%</div>
+      <div class="kpi-sub">🇳🇴 ノルウェー（推定35倍時）</div>
     </div>
-    <div class="kpi kpi-green">
-      <div class="kpi-lbl">海外最高EV</div>
-      <div class="kpi-val green">+24%</div>
-      <div class="kpi-sub">ノルウェー（日本との乖離）</div>
+    <div class="kpi kpi-a">
+      <div class="kpi-lbl">日本代表 最高EV</div>
+      <div class="kpi-v amber">+8%</div>
+      <div class="kpi-sub">🇯🇵 ベスト8（推定5倍時）</div>
     </div>
-    <div class="kpi kpi-amber">
-      <div class="kpi-lbl">日本WINNER種類</div>
-      <div class="kpi-val amber">5+種</div>
-      <div class="kpi-sub">2022実績ベース予想</div>
+    <div class="kpi kpi-p">
+      <div class="kpi-lbl">決勝カード最高EV</div>
+      <div class="kpi-v" style="color:var(--purple)">+18%</div>
+      <div class="kpi-sub">🇪🇸×🇫🇷（均衡近似）</div>
     </div>
-    <div class="kpi kpi-purple">
-      <div class="kpi-lbl">最有力候補</div>
-      <div class="kpi-val" style="color:var(--purple)">スペイン</div>
-      <div class="kpi-sub">海外+450・確率18%</div>
-    </div>
-  </div>
-
-  <!-- 商品一覧 -->
-  <div class="sec-hd">
-    <div class="sec-title">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>
-      2026年 日本発売予定 WINNER商品一覧
-    </div>
-    <span class="sec-badge">2022実績から予測</span>
-  </div>
-  <div class="prod-grid">
-    <div class="prod-card">
-      <div class="prod-hd">
-        <div class="prod-num" style="background:#eff6ff;color:#2563eb;">①</div>
-        <div><div class="prod-title">優勝予想（開幕期）</div><div class="prod-sub">グループステージ第2戦開始前まで</div></div>
-      </div>
-      <div class="prod-body">
-        全48カ国から優勝国を予想。一番買いやすい商品で倍率が一番安い。スペインで5〜6倍程度。ノルウェーなど穴馬が高倍率で狙い目。
-        <div style="margin-top:8px"><span class="prod-tag" style="background:#eff6ff;color:#2563eb;">確率×倍率で期待値計算</span><span class="prod-tag" style="background:#ecfdf5;color:#059669;">穴馬狙い有効</span></div>
-      </div>
-    </div>
-    <div class="prod-card">
-      <div class="prod-hd">
-        <div class="prod-num" style="background:#f0fdf4;color:#059669;">②</div>
-        <div><div class="prod-title">優勝予想（ベスト16）</div><div class="prod-sub">グループステージ終了後〜約1日のみ販売</div></div>
-      </div>
-      <div class="prod-body">
-        16カ国に絞られた時点で再予想。選択肢が減りより予想しやすい。ただし販売期間が超短い（2022は1日のみ）。ここでの急落・急騰が最大のチャンス。
-        <div style="margin-top:8px"><span class="prod-tag" style="background:#fef3c7;color:#92400e;">販売1日限定</span><span class="prod-tag" style="background:#f0fdf4;color:#059669;">大波乱後が狙い目</span></div>
-      </div>
-    </div>
-    <div class="prod-card">
-      <div class="prod-hd">
-        <div class="prod-num" style="background:#fef3c7;color:#92400e;">③</div>
-        <div><div class="prod-title">日本代表 成績予想</div><div class="prod-sub">初戦前日まで販売</div></div>
-      </div>
-      <div class="prod-body">
-        グループ敗退（勝ち点0〜6の7段階）＋ベスト16・8・4・3・準優勝・優勝の計13択。ベスト8の倍率が最もEV的に狙い目になりやすい。
-        <div style="margin-top:8px"><span class="prod-tag" style="background:#f5f3ff;color:#7c3aed;">13択</span><span class="prod-tag" style="background:#ecfdf5;color:#059669;">ベスト8が穴</span></div>
-      </div>
-    </div>
-    <div class="prod-card">
-      <div class="prod-hd">
-        <div class="prod-num" style="background:#fef2f2;color:#dc2626;">④</div>
-        <div><div class="prod-title">決勝カード予想</div><div class="prod-sub">ラウンド16終了後〜準々決勝前のみ</div></div>
-      </div>
-      <div class="prod-body">
-        決勝の2カ国を予想。全16通りの組み合わせから選択。2022はベスト8確定後の短期販売。スペイン×フランスが最有力候補の組み合わせ。
-        <div style="margin-top:8px"><span class="prod-tag" style="background:#fef3c7;color:#92400e;">16通り</span><span class="prod-tag" style="background:#eff6ff;color:#2563eb;">大本命対決が本命</span></div>
-      </div>
-    </div>
-    <div class="prod-card">
-      <div class="prod-hd">
-        <div class="prod-num" style="background:#ecfeff;color:#0891b2;">⑤</div>
-        <div><div class="prod-title">1試合予想（WINNER）</div><div class="prod-sub">全104試合対象・試合直前まで</div></div>
-      </div>
-      <div class="prod-body">
-        各試合のスコアを18択で予想。2026は48カ国のため試合数が104（2022の64試合より40増加）。日本戦3試合が最も人気集中でオッズが歪みやすい。
-        <div style="margin-top:8px"><span class="prod-tag" style="background:#ecfeff;color:#0891b2;">104試合</span><span class="prod-tag" style="background:#ecfdf5;color:#059669;">日本戦は歪み大</span></div>
-      </div>
-    </div>
-    <div class="prod-card" style="border-style:dashed;border-color:var(--border2);">
-      <div class="prod-hd">
-        <div class="prod-num" style="background:var(--surf2);color:var(--muted);">⑥?</div>
-        <div><div class="prod-title">優勝予想（ベスト32）</div><div class="prod-sub">2026新設の可能性あり</div></div>
-      </div>
-      <div class="prod-body">
-        48カ国→32カ国のラウンド32が新設されるため、2026から「ベスト32確定後の優勝予想」が追加される可能性が高い。開幕期とベスト16の間の商品。
-        <div style="margin-top:8px"><span class="prod-tag" style="background:#fef3c7;color:#92400e;">2026新設予想</span><span class="prod-tag" style="background:var(--surf2);color:var(--muted);">未確定</span></div>
-      </div>
+    <div class="kpi kpi-b">
+      <div class="kpi-lbl">分析対象市場数</div>
+      <div class="kpi-v blue">6</div>
+      <div class="kpi-sub">優勝×2・日本・決勝・試合・詳細</div>
     </div>
   </div>
 
-  <!-- EV説明 -->
-  <div class="sec-hd"><div class="sec-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>期待値の読み方</div></div>
-  <div class="ev-box">
-    <h3>📐 期待値（EV）計算式</h3>
-    <p>
-      <code>EV = 海外確率 × 日本倍率 − 1</code><br>
-      例：スペイン 確率18.2% × 日本5.5倍 − 1 = <code>+0.001（ほぼ均衡）</code><br>
-      例：ノルウェー 確率3.4% × 日本35倍 − 1 = <code>+0.19（+19%・割安）</code><br><br>
-      日本の胴元マージンは通常15〜25%。EV −15%以内なら許容範囲。プラスなら「海外より有利なオッズ」。
-    </p>
+  <div class="info info-blue">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 8 12 12 14 14"/></svg>
+    <p><strong>期待値（EV）計算式：</strong><code>EV% = （海外確率 × 日本推定倍率 − 1）× 100</code>　　海外確率はDraftKings米国オッズから逆算。EV +5%以上＝割安、0%前後＝均衡、−15%以下＝割高。胴元マージンは通常15〜25%なので0%前後でも悪くない。</p>
   </div>
 
-  <!-- 狙い目マップ -->
-  <div class="sec-hd"><div class="sec-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>投資判断マップ</div></div>
-  <div class="target-grid">
-    <div class="tc-card buy">
-      <div class="tc-lbl">✅ BUY — EV均衡以上</div>
-      <div class="tc-team">🇳🇴 ノルウェー</div>
-      <div class="tc-reason">ハーランド擁する初出場国。海外+2800（3.4%）に対し日本推定32〜40倍。EV +9〜+24%。日本の胴元が知名度低さで甘いオッズを出しやすい筆頭。</div>
-      <div class="tc-odds">海外+2800 → 日本32〜40倍推定 / EV +9〜+24%</div>
-    </div>
-    <div class="tc-card buy">
-      <div class="tc-lbl">✅ BUY — EV均衡以上</div>
-      <div class="tc-team">🇨🇴 コロンビア</div>
-      <div class="tc-reason">コパアメリカ2024準優勝。ルイス・ディアス（リバプール）主役。南米予選3位の実力派だが日本での知名度が低くオッズが甘くなりやすい。</div>
-      <div class="tc-odds">海外+4000 → 日本45〜55倍推定 / EV +5〜+15%</div>
-    </div>
-    <div class="tc-card buy">
-      <div class="tc-lbl">✅ BUY — EV均衡</div>
-      <div class="tc-team">🇩🇪 ドイツ</div>
-      <div class="tc-reason">EURO2024ベスト8で復活。ムシアラ世代が揃い長期的に最も成長しているチーム。知名度が高いため日本オッズは高め設定になりやすい。15倍以上なら均衡。</div>
-      <div class="tc-odds">海外+1400 → 日本15〜18倍推定 / EV 0〜+15%</div>
-    </div>
-    <div class="tc-card watch">
-      <div class="tc-lbl">👀 WATCH — 倍率次第</div>
-      <div class="tc-team">🇦🇷 アルゼンチン</div>
-      <div class="tc-reason">ディフェンディングチャンピオン。人気が集まりオッズが低くなりやすい。12倍以上になったら買い。メッシ38歳の体力管理が最大変数。</div>
-      <div class="tc-odds">海外+850 → 日本9〜11倍推定 / EV −5〜0%</div>
-    </div>
-    <div class="tc-card watch">
-      <div class="tc-lbl">👀 WATCH — 8.5倍超で買い</div>
-      <div class="tc-team">🇫🇷 フランス</div>
-      <div class="tc-reason">2大会連続決勝進出で地力は最高レベル。エムバペがフィットしていれば優勝確率はスペインと同等。日本で8.5倍超なら積極的に検討。</div>
-      <div class="tc-odds">海外+600 → 日本7〜8倍推定 / EV −5〜+5%</div>
-    </div>
-    <div class="tc-card avoid">
-      <div class="tc-lbl">❌ AVOID — EV不利</div>
-      <div class="tc-team">🇧🇷 ブラジル</div>
-      <div class="tc-reason">南米予選5位通過と弱体化が顕著。日本での人気は高くオッズが低め。名前で買うには明確に割高。アンチェロッティ体制の熟成度が未知数。</div>
-      <div class="tc-odds">海外+850 → 日本9〜11倍推定 / EV −5〜0%（実力考慮でマイナス）</div>
-    </div>
-  </div>
-</div>
-
-<!-- ══════════════════════════════════════════
-     PAGE 1: 優勝予想（開幕期）
-══════════════════════════════════════════ -->
-<div class="page" id="page1">
-  <div class="sec-hd"><div class="sec-title">🏆 優勝予想（開幕期）— 全48カ国オッズ & 期待値</div><span class="sec-badge">DraftKings 2026.3.31</span></div>
-  <div class="ev-box">
-    <h3>📋 この商品について</h3>
-    <p>グループステージ第2戦が始まる直前まで購入可能。<strong>48カ国全てが選択肢</strong>になる最もベーシックな優勝予想。2022年は開幕から約5日間販売。期待値が高い国を早めに購入するのがセオリー。</p>
-  </div>
+  <!-- 総合EV LEADERBOARD -->
+  <div class="sec"><div class="sec-t"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>全市場 EV総合ランキング TOP20</div><span class="badge b-blue">全市場横断</span></div>
   <div class="card">
-    <div class="card-hd">
-      <div class="card-title"><svg viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>全48カ国 期待値一覧</div>
-      <div style="font-size:11px;color:var(--muted)">海外確率ベースで計算</div>
-    </div>
-    <div class="tbl-wrap"><table id="t1"><thead><tr><th>国</th><th class="c">Tier</th><th class="r">海外+オッズ</th><th class="r">海外確率</th><th class="r">日本推定倍率</th><th class="r">期待値EV</th><th class="c">判定</th></tr></thead><tbody id="tb1"></tbody></table></div>
+    <div class="card-h"><div class="card-t"><svg viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>期待値が高い順（BUY候補）</div><span class="badge b-green">AIスコア付き</span></div>
+    <div id="leaderboard"></div>
   </div>
-</div>
 
-<!-- ══════════════════════════════════════════
-     PAGE 2: 優勝予想（ベスト16）
-══════════════════════════════════════════ -->
-<div class="page" id="page2">
-  <div class="sec-hd"><div class="sec-title">🏆 優勝予想（ベスト16）— 突破有力16カ国</div><span class="sec-badge">グループ突破予測</span></div>
-  <div class="ev-box">
-    <h3>📋 この商品について</h3>
-    <p>グループステージ終了後、16カ国確定から<strong>約1日のみ</strong>の超短期販売（2022年実績）。選択肢が減るため計算がしやすく、グループリーグで波乱があった場合はここで一気にオッズが動く。<strong>最も期待値が出やすいタイミング</strong>の商品。</p>
-  </div>
-  <div class="sec-hd" style="margin-top:0"><div class="sec-title">グループ突破予測（ベスト16残留有力国）</div><span class="sec-note">※グループ分け未確定のため暫定</span></div>
-  <div class="final-grid" id="b16grid"></div>
-  <div class="sec-hd"><div class="sec-title">ベスト16後のオッズ変動シミュレーション</div></div>
-  <div class="card">
-    <div class="card-body">
-      <table class="tbl-wrap" style="width:100%">
-        <table id="t2"><thead><tr><th>国</th><th class="r">現在（開幕期）日本倍率</th><th class="r">ベスト16後 予想倍率</th><th class="r">倍率変化</th><th class="r">EV（ベスト16時）</th><th class="c">判定</th></tr></thead><tbody id="tb2"></tbody></table>
-      </table>
-    </div>
-  </div>
-</div>
-
-<!-- ══════════════════════════════════════════
-     PAGE 3: 日本代表 成績予想
-══════════════════════════════════════════ -->
-<div class="page" id="page3">
-  <div class="sec-hd"><div class="sec-title">🇯🇵 日本代表 成績予想 — 13択 期待値分析</div><span class="sec-badge">初戦前日まで販売</span></div>
-  <div class="ev-box">
-    <h3>📋 この商品について</h3>
-    <p>日本代表の最終成績を予想。<strong>グループ敗退7段階（勝ち点0〜6）＋ベスト16・ベスト8・4位・3位・準優勝・優勝の計13択</strong>。2022年は「グループ敗退（勝ち点3）」が3.2倍で最人気。日本の実力を正しく読んで期待値を稼ぐ。</p>
-  </div>
-  <div class="sec-hd"><div class="sec-title">2026年 日本代表 成績別オッズ予測</div><span class="sec-note">2022年データをベースに調整</span></div>
-  <div class="jpn-grid" id="jpngrid"></div>
-  <div class="sec-hd" style="margin-top:24px"><div class="sec-title">日本代表の現状分析</div></div>
+  <!-- フィルタ別ランキング -->
+  <div class="sec"><div class="sec-t"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>AI分析コメント</div></div>
   <div class="g g2">
     <div class="card">
-      <div class="card-hd"><div class="card-title">⚡ 強み</div></div>
-      <div class="card-body" style="font-size:12.5px;line-height:1.9;color:var(--ink2);">
-        ✅ 久保建英（レアル・ソシエダ）・三笘薫（ブライトン）が欧州で確立<br>
-        ✅ W杯2022でドイツ・スペインに勝利した組織力・メンタル<br>
-        ✅ アジア予選グループ1位通過で勢いあり<br>
-        ✅ 欧州主要リーグ組が過去最多（20名超）<br>
-        ✅ 森保体制の熟成とショートカウンターの完成度
-      </div>
+      <div class="card-h"><div class="card-t" style="color:var(--green)">🎯 BUY推奨（EV +5%以上）</div></div>
+      <div id="buyList"></div>
     </div>
     <div class="card">
-      <div class="card-hd"><div class="card-title">⚠️ 課題</div></div>
-      <div class="card-body" style="font-size:12.5px;line-height:1.9;color:var(--ink2);">
-        ❌ アジアカップ2023ベスト8敗退（格下相手に苦戦）<br>
-        ❌ セットプレー守備の脆弱性（W杯2022でも失点源）<br>
-        ❌ 格上相手のPKに弱い（2022クロアチア戦で敗退）<br>
-        ❌ ストライカー不足（前田・上田の決定力向上が課題）<br>
-        ❌ 48カ国フォーマットでグループ3位でも決勝T進出可能性あり
+      <div class="card-h"><div class="card-t" style="color:var(--red)">🚫 AVOID（EV −20%以下）</div></div>
+      <div id="avoidList"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ PAGE 1: 優勝予想（開幕期）═══ -->
+<div class="pg" id="p1">
+  <div class="info info-blue">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+    <p><strong>販売タイミング（2022実績）：</strong>大会開幕日〜グループステージ第2戦開始直前（約5日間）。全48カ国から1カ国選択。1口200円。<strong>日本発売内容・倍率は未確定。日本推定倍率は2022実績から算出した試算値です。</strong></p>
+  </div>
+  <div class="sec">
+    <div class="sec-t"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>全48カ国 オッズ & 期待値</div>
+    <div class="sec-r">
+      <div class="fbar" id="f1">
+        <button class="fbtn on" onclick="filter1('all',this)">全て</button>
+        <button class="fbtn" onclick="filter1('buy',this)">🔥 BUY</button>
+        <button class="fbtn" onclick="filter1('neutral',this)">✅ 均衡</button>
+        <button class="fbtn" onclick="filter1('avoid',this)">❌ 割高</button>
+        <button class="fbtn" onclick="filter1('S',this)">S級</button>
+        <button class="fbtn" onclick="filter1('A',this)">A級</button>
+        <button class="fbtn" onclick="filter1('B',this)">B級</button>
       </div>
     </div>
   </div>
-  <div style="margin-top:12px;padding:13px 16px;background:var(--green-bg);border:1px solid var(--green-br);border-radius:var(--r);font-size:12px;color:#065f46;line-height:1.8;">
-    <strong>ポニョの見立て：</strong>ベスト16（予選突破）確率 約65%。ベスト8到達確率 約30%。日本のWINNERで最も期待値が出やすいのは<strong>「ベスト8（4〜6倍付近）」</strong>。グループステージは3カ国に増えたため1勝でもほぼ突破でき、ベスト16は本命と言えるほど確率が高い。2022のベスト16倍率（3.9倍）より低めになる可能性があり、ベスト8への突破予想に注目。
-  </div>
-</div>
-
-<!-- ══════════════════════════════════════════
-     PAGE 4: 決勝カード予想
-══════════════════════════════════════════ -->
-<div class="page" id="page4">
-  <div class="sec-hd"><div class="sec-title">⚔️ 決勝カード予想 — 有力組み合わせ分析</div><span class="sec-badge">ベスト8確定後のみ販売</span></div>
-  <div class="ev-box">
-    <h3>📋 この商品について</h3>
-    <p>準々決勝開始前の<strong>数日間のみ</strong>販売される。決勝の2カ国の組み合わせを予想（順不同）。2022は16通りの選択肢。2026はベスト8=8カ国から2カ国を選ぶため<strong>28通り</strong>になる予定。確率が高い組み合わせのオッズが低く、波乱組み合わせが高倍率になる。</p>
-  </div>
-  <div class="sec-hd"><div class="sec-title">有力決勝カード組み合わせ TOP 10</div></div>
   <div class="card">
-    <div class="tbl-wrap">
-      <table id="t4"><thead><tr><th>組み合わせ</th><th class="r">合算確率</th><th class="r">日本推定倍率</th><th class="r">EV目安</th><th class="c">判定</th><th>理由</th></tr></thead><tbody id="tb4"></tbody></table>
-    </div>
+    <div class="card-h"><div class="card-t"><svg viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg>優勝予想（開幕期）— 海外確率 × 日本推定倍率</div><span class="badge b-blue">DraftKings 2026.3.31</span></div>
+    <div class="tw"><table><thead><tr>
+      <th>国</th><th class="c">Tier</th>
+      <th class="r sortable" onclick="sortTbl('t1','us')">海外US+オッズ ↕</th>
+      <th class="r sortable" onclick="sortTbl('t1','prob')">海外確率 ↕</th>
+      <th class="r sortable" onclick="sortTbl('t1','jp')">日本推定倍率(※) ↕</th>
+      <th class="r sortable" onclick="sortTbl('t1','ev')">期待値EV ↕</th>
+      <th class="c">AI判定</th>
+    </tr></thead><tbody id="t1b"></tbody></table></div>
+    <div class="score-note-box">※ 日本推定倍率は2022年大会の実績比率を参考にした試算値。実際の発売倍率とは異なる場合があります。倍率が確定次第このサイトを更新します。</div>
   </div>
 </div>
 
-<!-- ══════════════════════════════════════════
-     PAGE 5: 1試合予想
-══════════════════════════════════════════ -->
-<div class="page" id="page5">
-  <div class="sec-hd"><div class="sec-title">⚽ 1試合予想（WINNER）— 注目試合 & スコア分析</div><span class="sec-badge">全104試合対象</span></div>
-  <div class="ev-box">
-    <h3>📋 この商品について</h3>
-    <p>各試合のスコアを<strong>18択</strong>から予想する1試合単位のWINNER。2026は全104試合（2022の64試合から+40）。日本代表3試合は投票が集中しオッズが歪みやすい。海外スポーツベット（Betway、Bet365等）の試合オッズと比較することでEVを判断する。</p>
+<!-- ═══ PAGE 2: 優勝予想（ベスト16）═══ -->
+<div class="pg" id="p2">
+  <div class="info info-amber">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+    <p><strong>⚡ 最重要商品：</strong>2022年は<strong>1日のみ</strong>の超短期販売。グループステージで波乱があった場合、ここで一気にオッズが動く。事前に狙う国を決めておくことが必須。<strong>日本発売は未確定。</strong></p>
   </div>
-  <div class="sec-hd"><div class="sec-title">試合予想のポイント</div></div>
+  <div class="sec"><div class="sec-t"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>ベスト16通過有力国 & オッズ変動予測</div><span class="badge b-amber">グループ分け未確定</span></div>
+  <div class="card">
+    <div class="card-h"><div class="card-t"><svg viewBox="0 0 24 24" fill="none" stroke="var(--amber)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/></svg>開幕期→ベスト16確定後 オッズ変動シミュレーション</div></div>
+    <div class="tw"><table><thead><tr>
+      <th>国</th>
+      <th class="r">開幕期 日本推定倍率</th>
+      <th class="r">ベスト16後 予測倍率</th>
+      <th class="r">倍率変化</th>
+      <th class="r">EV（開幕期）</th>
+      <th class="r">EV（ベスト16後）</th>
+      <th class="c">判定</th>
+    </tr></thead><tbody id="t2b"></tbody></table></div>
+    <div class="score-note-box">ベスト16後の倍率はグループステージ結果により大きく変動します。波乱が起きた場合（例：強豪が2位通過）は倍率が上昇し期待値が高まる可能性あり。</div>
+  </div>
+
+  <div class="sec"><div class="sec-t"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>波乱シナリオ別 EV変化シミュレーション</div></div>
   <div class="g g3">
-    <div class="card">
-      <div class="card-hd"><div class="card-title" style="color:var(--blue)">🎯 スコア予想の基本戦略</div></div>
-      <div class="card-body" style="font-size:12.5px;color:var(--ink2);line-height:1.9;">
-        <strong>人気スコアより穴スコアを狙う</strong><br>
-        ✅ 0-0（引き分けが安い試合）<br>
-        ✅ 2-1（最頻出スコア）より3-0等に分散<br>
-        ✅ 日本の試合は「日本勝利」に人気集中→相手勝利や引き分けスコアが高倍率になる<br><br>
-        <strong>推奨分散方法</strong><br>
-        1試合あたり3〜5口を異なるスコアに分散投資するのが定石
+    <div class="card"><div class="card-h"><div class="card-t" style="color:var(--green)">🎯 シナリオA：本命通り</div></div>
+      <div class="card-b" style="font-size:12.5px;color:var(--ink2);line-height:1.9;">
+        スペイン・フランス・イングランドが全員1位通過。<br>倍率変化：<strong>−10〜−20%（下落）</strong><br>→ 開幕期に本命を買っていれば良いタイミング。ベスト16では穴狙いに切り替え。
       </div>
     </div>
-    <div class="card">
-      <div class="card-hd"><div class="card-title" style="color:var(--green)">🇯🇵 日本戦3試合の注目点</div></div>
-      <div class="card-body" style="font-size:12.5px;color:var(--ink2);line-height:1.9;">
-        <strong>グループステージ3試合</strong>（対戦相手未確定）<br><br>
-        ✅ 日本の試合は国内人気が集中→<strong>日本勝利スコアのオッズが最も低くなる</strong><br>
-        ✅ 相手勝利・引き分けスコアが割高になりやすい<br>
-        ✅ 2022は日本の勝利予想が最大80%超（vsコスタリカ）→結果は1-0勝利<br>
-        ✅ 海外ブックメーカーと比較してオッズ乖離が最大になりやすい
+    <div class="card"><div class="card-h"><div class="card-t" style="color:var(--amber)">⚡ シナリオB：一部波乱</div></div>
+      <div class="card-b" style="font-size:12.5px;color:var(--ink2);line-height:1.9;">
+        強豪1〜2チームが2位通過or同組対決。<br>倍率変化：<strong>±0〜+15%（混在）</strong><br>→ 生き残り強豪の倍率が上昇。ここで追い買いのチャンス。
       </div>
     </div>
-    <div class="card">
-      <div class="card-hd"><div class="card-title" style="color:var(--amber)">📊 海外との比較方法</div></div>
-      <div class="card-body" style="font-size:12.5px;color:var(--ink2);line-height:1.9;">
-        <strong>比較すべき海外サイト</strong><br>
-        ✅ Bet365（スコア予想の種類が最多）<br>
-        ✅ Betway（1試合スコア市場が充実）<br>
-        ✅ Oddschecker（複数サイトのオッズ比較）<br><br>
-        <strong>計算方法</strong><br>
-        海外のコレクトスコア確率 × 日本倍率 − 1 = EV<br>
-        EV +10%以上のスコアを探して集中投資する
+    <div class="card"><div class="card-h"><div class="card-t" style="color:var(--red)">🔥 シナリオC：大波乱</div></div>
+      <div class="card-b" style="font-size:12.5px;color:var(--ink2);line-height:1.9;">
+        スペインまたはフランスがグループ敗退。<br>倍率変化：<strong>+30〜+100%（急騰）</strong><br>→ 残った強豪の倍率が大幅上昇。ベスト16商品が最大のEVを生む。
       </div>
     </div>
-  </div>
-  <div class="sec-hd" style="margin-top:8px"><div class="sec-title">2022年 日本戦 スコア予想 参考データ</div></div>
-  <div class="card">
-    <div class="tbl-wrap">
-      <table>
-        <thead><tr><th>試合</th><th>結果スコア</th><th class="r">日本勝利 投票率</th><th class="r">最人気スコア</th><th>実際スコアの珍しさ</th></tr></thead>
-        <tbody>
-          <tr><td>日本 vs ドイツ</td><td><span class="badge b-green">日本 2-1</span></td><td class="r">28%</td><td class="r">ドイツ2-0（人気）</td><td><span class="badge b-amber">大波乱</span></td></tr>
-          <tr><td>日本 vs コスタリカ</td><td><span class="badge b-red">日本 0-1</span></td><td class="r">58%</td><td class="r">日本2-0（人気）</td><td><span class="badge b-amber">中波乱</span></td></tr>
-          <tr><td>日本 vs スペイン</td><td><span class="badge b-green">日本 2-1</span></td><td class="r">27%</td><td class="r">スペイン2-0（人気）</td><td><span class="badge b-amber">大波乱</span></td></tr>
-        </tbody>
-      </table>
-    </div>
-    <div class="score-note">💡 2022年の日本戦3試合は全て「人気スコアを外れる結果」に。特にドイツ戦・スペイン戦の日本勝利は高倍率スコアが的中した典型例。日本戦は人気に逆張りする戦略が機能しやすいことを示している。</div>
   </div>
 </div>
 
-<footer>W杯2026 完全予想ガイド ／ 情報提供目的 ／ Powered by OpenClaw × ZETTAI ／ データ出典：DraftKings・Sporting News・Wikipedia</footer>
+<!-- ═══ PAGE 3: 日本代表成績 ═══ -->
+<div class="pg" id="p3">
+  <div class="info info-blue">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+    <p><strong>日本代表の成績を13択で予想するWINNER商品（2022実績）。</strong>初戦前日まで販売。グループ敗退7通り（勝ち点0〜6）＋ベスト16・8・4位・3位・準優勝・優勝。<strong>日本発売は未確定。倍率は2022実績ベースの試算値。</strong></p>
+  </div>
+
+  <!-- 分析サマリー -->
+  <div class="g g2" style="margin-bottom:16px;">
+    <div class="card">
+      <div class="card-h"><div class="card-t" style="color:var(--green)">⚡ 強み（2026版）</div></div>
+      <div class="card-b" style="font-size:12.5px;color:var(--ink2);line-height:1.9;">
+        ✅ 久保建英・三笘薫が欧州確立済み<br>✅ W杯2022 ドイツ・スペイン撃破の実績<br>✅ アジア予選グループ1位通過<br>✅ 欧州組20名超（過去最多）<br>✅ 2026は48カ国→グループ3位でも決勝T進出可能（新フォーマット）
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-h"><div class="card-t" style="color:var(--red)">⚠️ リスク</div></div>
+      <div class="card-b" style="font-size:12.5px;color:var(--ink2);line-height:1.9;">
+        ❌ アジアカップ2023 ベスト8敗退（格下に苦戦）<br>❌ セットプレー守備の脆弱性<br>❌ 決勝T以降のPK・延長に弱い<br>❌ 確実なストライカー不在<br>❌ 組み合わせ次第で死の組入りリスク
+      </div>
+    </div>
+  </div>
+
+  <div class="sec"><div class="sec-t"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>全13択 期待値分析</div><span class="badge b-amber">推定確率×試算倍率</span></div>
+  <div class="jpn-grid" id="jpn-grid"></div>
+
+  <div class="info info-green" style="margin-top:16px;">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+    <p><strong>AI見立て：</strong>ベスト8（推定5倍前後）が最も期待値的に狙い目。グループ突破確率65%・ベスト8到達確率30%と試算。2022年のベスト16（3.9倍）より「ベスト8」に重点を置くことを推奨。2026は新フォーマットのため「グループ突破（3位通過含む）」確率が上昇、グループ突破系の倍率が低下する可能性あり。</p>
+  </div>
+</div>
+
+<!-- ═══ PAGE 4: 決勝カード ═══ -->
+<div class="pg" id="p4">
+  <div class="info info-amber">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+    <p><strong>準々決勝開始前のみ販売（超短期）。</strong>2022年は16通り → 2026年はベスト8=8カ国から2カ国なので<strong>28通り</strong>に増加予定。人気組み合わせは低倍率、波乱カードが高倍率。<strong>日本発売は未確定。</strong></p>
+  </div>
+  <div class="sec"><div class="sec-t"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>有力決勝カード 全リスト</div><span class="badge b-blue">確率×倍率×EV</span></div>
+  <div class="card">
+    <div class="card-h"><div class="card-t"><svg viewBox="0 0 24 24" fill="none" stroke="var(--purple)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>決勝カード予想 期待値ランキング</div></div>
+    <div class="tw"><table><thead><tr>
+      <th>組み合わせ</th>
+      <th class="r">合算確率</th>
+      <th class="r">日本推定倍率(※)</th>
+      <th class="r">EV</th>
+      <th class="c">判定</th>
+      <th>ポイント</th>
+    </tr></thead><tbody id="t4b"></tbody></table></div>
+    <div class="score-note-box">※ 日本推定倍率は海外確率から試算。実際の発売倍率は異なります。日本確定次第更新。</div>
+  </div>
+</div>
+
+<!-- ═══ PAGE 5: 1試合予想 ═══ -->
+<div class="pg" id="p5">
+  <div class="info info-blue">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 8 12 12 14 14"/></svg>
+    <p><strong>各試合のスコアを18択で予想するWINNER商品。2026は全104試合対象。</strong>日本代表の3試合は国内投票が集中しオッズ歪みが最大。海外ブックメーカーのコレクトスコア市場との比較でEVを計算する。<strong>日本発売は未確定。</strong></p>
+  </div>
+  <div class="g g3">
+    <div class="kpi kpi-b"><div class="kpi-lbl">対象試合数</div><div class="kpi-v blue">104試合</div><div class="kpi-sub">2022より+40試合</div></div>
+    <div class="kpi kpi-g"><div class="kpi-lbl">1試合あたり選択肢</div><div class="kpi-v green">18択</div><div class="kpi-sub">スコアを18通りから選択</div></div>
+    <div class="kpi kpi-a"><div class="kpi-lbl">日本戦 最大オッズ歪み</div><div class="kpi-v amber">最大</div><div class="kpi-sub">国内人気集中で逆張り有効</div></div>
+  </div>
+
+  <div class="sec"><div class="sec-t"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>スコア予想 EV最大化戦略</div></div>
+  <div class="g g2">
+    <div class="card">
+      <div class="card-h"><div class="card-t" style="color:var(--blue)">🎯 基本戦略</div></div>
+      <div class="card-b" style="font-size:12.5px;color:var(--ink2);line-height:1.95;">
+        <strong>原則：人気スコアを避け、穴スコアに分散</strong><br><br>
+        ✅ 最人気スコア（例：1-0, 2-0）はオッズが低い<br>
+        ✅ 2-1, 1-1, 0-0などが中間オッズ<br>
+        ✅ 3-0, 3-1, 2-3などが高オッズ<br><br>
+        <strong>推奨：1試合 3〜5口を異なるスコアに分散</strong><br>
+        例）2-1 × 1口 ＋ 3-1 × 1口 ＋ 1-2 × 1口
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-h"><div class="card-t" style="color:var(--green)">🇯🇵 日本戦 逆張り戦略</div></div>
+      <div class="card-b" style="font-size:12.5px;color:var(--ink2);line-height:1.95;">
+        <strong>日本戦は国内投票が集中→オッズが歪む</strong><br><br>
+        ✅ 日本勝利スコアに人気が集まり倍率が下がる<br>
+        ✅ 相手勝利・引き分けスコアが割高に<br><br>
+        <strong>2022年 日本戦の教訓：</strong><br>
+        vsドイツ：最人気「ドイツ2-0」→実際は「日本2-1」<br>
+        vsコスタリカ：最人気「日本2-0」→実際は「コスタリカ1-0」<br>
+        vsスペイン：最人気「スペイン2-0」→実際は「日本2-1」
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:14px;">
+    <div class="card-h"><div class="card-t"><svg viewBox="0 0 24 24" fill="none" stroke="var(--amber)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="13" width="4" height="9"/><rect x="9" y="9" width="4" height="13"/><rect x="16" y="5" width="4" height="17"/><line x1="1" y1="22" x2="23" y2="22"/></svg>コレクトスコア EV計算表（代表的なスコア）</div><span class="badge b-blue">海外ブックメーカー平均</span></div>
+    <div class="tw"><table><thead><tr>
+      <th>スコア</th><th class="r">海外平均確率</th><th class="r">海外倍率</th><th class="r">日本推定倍率(※)</th><th class="r">EV</th><th class="c">特徴</th>
+    </tr></thead><tbody id="t5b"></tbody></table></div>
+    <div class="score-note-box">※対象試合や対戦カードによって大きく変わります。強豪vs格下は大差スコアの確率が上がり、拮抗したカードは1点差スコアが多くなります。試合ごとに個別に計算することを推奨。</div>
+  </div>
+</div>
+
+<!-- ═══ PAGE 6: 商品ガイド ═══ -->
+<div class="pg" id="p6">
+  <div class="info info-amber">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+    <p><strong>日本での発売内容は未確定です。</strong>2022年実績をベースに「おそらくこういう商品が出る」という予測を記載しています。発売が確定次第、このページを更新します。</p>
+  </div>
+  <div class="sec"><div class="sec-t"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>2026年 発売予定WINNER商品ガイド（予測）</div></div>
+  <div class="mkt-grid" id="mkt-grid"></div>
+
+  <div class="sec"><div class="sec-t"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>購入タイムライン（大会日程）</div></div>
+  <div class="card">
+    <div id="timeline"></div>
+    <div class="score-note-box">日程は2026年大会の予定です。実際の販売開始日は公式サイトでご確認ください。</div>
+  </div>
+</div>
+
+<footer>W杯2026 EV追跡システム ／ Powered by OpenClaw × ZETTAI ／ データ出典：DraftKings・SportingNews・Wikipedia ／ 日本発売詳細は確定次第更新</footer>
 
 <script>
-// ─ TAB ─────────────────────────────────────
-function switchTab(i){
-  document.querySelectorAll('.tab-btn').forEach((b,j)=>b.classList.toggle('active',j===i));
-  document.querySelectorAll('.page').forEach((p,j)=>p.classList.toggle('active',j===i));
-  window.scrollTo({top:0,behavior:'smooth'});
-}
-
-// ─ DATA ─────────────────────────────────────
-const teams=[
-  {f:'🇪🇸',n:'スペイン',r:1,us:450,jp:5.5,tier:'S'},
-  {f:'🏴󠁧󠁢󠁥󠁮󠁧󠁿',n:'イングランド',r:3,us:600,jp:7.0,tier:'S'},
-  {f:'🇫🇷',n:'フランス',r:4,us:600,jp:7.0,tier:'S'},
-  {f:'🇦🇷',n:'アルゼンチン',r:2,us:850,jp:10.0,tier:'S'},
-  {f:'🇧🇷',n:'ブラジル',r:5,us:850,jp:10.0,tier:'A'},
-  {f:'🇵🇹',n:'ポルトガル',r:6,us:1100,jp:12.5,tier:'A'},
-  {f:'🇩🇪',n:'ドイツ',r:9,us:1400,jp:16.0,tier:'A'},
-  {f:'🇳🇱',n:'オランダ',r:7,us:2000,jp:22.0,tier:'A'},
-  {f:'🇳🇴',n:'ノルウェー',r:29,us:2800,jp:32.0,tier:'B'},
-  {f:'🇧🇪',n:'ベルギー',r:8,us:3500,jp:38.0,tier:'B'},
-  {f:'🇨🇴',n:'コロンビア',r:13,us:4000,jp:45.0,tier:'B'},
-  {f:'🇯🇵',n:'日本',r:18,us:5000,jp:51.0,tier:'B'},
-  {f:'🇲🇦',n:'モロッコ',r:11,us:6000,jp:65.0,tier:'B'},
-  {f:'🇺🇾',n:'ウルグアイ',r:16,us:6500,jp:70.0,tier:'B'},
-  {f:'🇹🇷',n:'トルコ',r:25,us:6500,jp:70.0,tier:'B'},
-  {f:'🇺🇸',n:'アメリカ',r:14,us:6500,jp:70.0,tier:'C'},
-  {f:'🇲🇽',n:'メキシコ',r:15,us:7000,jp:75.0,tier:'C'},
-  {f:'🇪🇨',n:'エクアドル',r:23,us:8000,jp:85.0,tier:'C'},
-  {f:'🇸🇪',n:'スウェーデン',r:43,us:8000,jp:85.0,tier:'C'},
-  {f:'🇭🇷',n:'クロアチア',r:10,us:9000,jp:95.0,tier:'C'},
-  {f:'🇨🇭',n:'スイス',r:17,us:10000,jp:105.0,tier:'C'},
-  {f:'🇸🇳',n:'セネガル',r:19,us:10000,jp:105.0,tier:'C'},
-  {f:'🇦🇹',n:'オーストリア',r:24,us:10000,jp:105.0,tier:'C'},
-  {f:'🇵🇾',n:'パラグアイ',r:39,us:20000,jp:200.0,tier:'D'},
-  {f:'🇨🇦',n:'カナダ',r:27,us:20000,jp:200.0,tier:'D'},
-  {f:'🏴󠁧󠁢󠁳󠁣󠁴󠁿',n:'スコットランド',r:36,us:20000,jp:200.0,tier:'D'},
-  {f:'🇨🇮',n:'コートジボワール',r:42,us:25000,jp:250.0,tier:'D'},
-  {f:'🇪🇬',n:'エジプト',r:34,us:30000,jp:300.0,tier:'D'},
-  {f:'🇰🇷',n:'韓国',r:22,us:35000,jp:350.0,tier:'D'},
-  {f:'🇬🇭',n:'ガーナ',r:72,us:35000,jp:350.0,tier:'D'},
-  {f:'🇩🇿',n:'アルジェリア',r:35,us:35000,jp:350.0,tier:'D'},
-  {f:'🇦🇺',n:'オーストラリア',r:26,us:45000,jp:450.0,tier:'D'},
-  {f:'🇹🇳',n:'チュニジア',r:40,us:50000,jp:500.0,tier:'D'},
-  {f:'🇿🇦',n:'南アフリカ',r:61,us:80000,jp:800.0,tier:'D'},
-  {f:'🇵🇦',n:'パナマ',r:30,us:100000,jp:1000.0,tier:'D'},
-  {f:'🇶🇦',n:'カタール',r:51,us:100000,jp:1000.0,tier:'D'},
-  {f:'🇸🇦',n:'サウジアラビア',r:60,us:100000,jp:1000.0,tier:'D'},
-];
-const tierC={S:'t-s',A:'t-a',B:'t-b',C:'t-c',D:'t-d'};
+// ═══ UTILITY ═══
 function p(us){return us>0?100/(us+100):Math.abs(us)/(Math.abs(us)+100);}
-function evPct(prob,jp){return((prob*jp-1)*100).toFixed(0);}
-function badgeCls(ev){
-  const v=parseFloat(ev);
-  if(v>5)  return ['ev-hot','🔥 割安'];
-  if(v>-5) return ['b-green','✅ 均衡'];
-  if(v>-20)return ['b-gray','➖ やや割高'];
+function ev(prob,jp){return((prob*jp-1)*100);}
+function evFmt(v){return (v>0?'+':'')+v.toFixed(1)+'%';}
+function evColor(v){return v>5?'var(--green)':v>-5?'var(--amber)':v>-20?'var(--muted)':'var(--red)';}
+function evBadge(v){
+  if(v>10)  return ['b-hot','🔥 強く割安'];
+  if(v>3)   return ['b-green','✅ 割安'];
+  if(v>-5)  return ['b-green','✅ 均衡'];
+  if(v>-15) return ['b-gray','➖ やや割高'];
   return ['b-red','❌ 割高'];
 }
-function evColor(v){return parseFloat(v)>0?'var(--green)':parseFloat(v)>-15?'var(--amber)':'var(--red)';}
+const TC={S:'t-S',A:'t-A',B:'t-B',C:'t-C',D:'t-D'};
 
-// PAGE 1: 開幕期テーブル
-const tb1=document.getElementById('tb1');
-teams.forEach(t=>{
-  const prob=p(t.us), ev=evPct(prob,t.jp);
-  const [bc,bl]=badgeCls(ev);
-  tb1.innerHTML+=`<tr>
-    <td><div class="tc"><span class="fl">${t.f}</span><div><div class="tn">${t.n}</div><div class="ts">FIFAランク ${t.r}位</div></div></div></td>
-    <td class="c"><span class="tier ${tierC[t.tier]}">${t.tier}級</span></td>
-    <td class="r"><strong>+${t.us.toLocaleString()}</strong></td>
-    <td class="r">
-      <div class="pbar"><div class="pbar-n">${(prob*100).toFixed(1)}%</div>
-      <div class="pbar-t"><div class="pbar-f" style="width:${Math.min(prob*400,100)}%;background:${parseFloat(ev)>0?'var(--green)':parseFloat(ev)>-15?'var(--amber)':'var(--red)'}"></div></div></div>
-    </td>
-    <td class="r"><strong>${t.jp}倍</strong></td>
-    <td class="r"><strong style="color:${evColor(ev)}">${parseFloat(ev)>0?'+':''}${ev}%</strong></td>
-    <td class="c"><span class="badge ${bc}">${bl}</span></td>
-  </tr>`;
-});
-
-// PAGE 2: ベスト16
-const b16teams=[
-  {f:'🇪🇸',n:'スペイン',r:1,us:450,jp:5.5,jp16:4.5,note:'1位通過ほぼ確実'},
-  {f:'🇫🇷',n:'フランス',r:4,us:600,jp:7.0,jp16:6.0,note:'2位でも通過'},
-  {f:'🏴󠁧󠁢󠁥󠁮󠁧󠁿',n:'イングランド',r:3,us:600,jp:7.0,jp16:6.0,note:'安定した通過力'},
-  {f:'🇦🇷',n:'アルゼンチン',r:2,us:850,jp:10.0,jp16:8.5,note:'メッシ起用次第'},
-  {f:'🇧🇷',n:'ブラジル',r:5,us:850,jp:10.0,jp16:9.0,note:'予選苦戦が不安材料'},
-  {f:'🇵🇹',n:'ポルトガル',r:6,us:1100,jp:12.5,jp16:10.5,note:'安定通過'},
-  {f:'🇩🇪',n:'ドイツ',r:9,us:1400,jp:16.0,jp16:13.0,note:'組み合わせ次第で1位'},
-  {f:'🇳🇱',n:'オランダ',r:7,us:2000,jp:22.0,jp16:18.0,note:'安定した守備力'},
-  {f:'🇳🇴',n:'ノルウェー',r:29,us:2800,jp:32.0,jp16:22.0,note:'初出場・組み合わせが鍵'},
-  {f:'🇨🇴',n:'コロンビア',r:13,us:4000,jp:45.0,jp16:32.0,note:'コパ準優勝の実力'},
-  {f:'🇯🇵',n:'日本',r:18,us:5000,jp:51.0,jp16:35.0,note:'グループ突破確率65%'},
-  {f:'🇲🇦',n:'モロッコ',r:11,us:6000,jp:65.0,jp16:42.0,note:'W杯2022ベスト4の実績'},
+// ═══ TEAMS DATA ═══
+const TEAMS=[
+  {f:'🇪🇸',n:'スペイン',r:1,us:450,jp:5.5,tier:'S',
+   note:'EURO2024優勝・ヤマル18歳主軸のポゼッション軍団。最も完成度が高い。'},
+  {f:'🏴󠁧󠁢󠁥󠁮󠁧󠁿',n:'イングランド',r:3,us:600,jp:7.0,tier:'S',
+   note:'EURO2024準優勝・トゥヘル新体制。60年ぶり優勝への本命。'},
+  {f:'🇫🇷',n:'フランス',r:4,us:600,jp:7.0,tier:'S',
+   note:'2大会連続決勝・エムバペ主役。8.5倍超なら積極的に購入検討。'},
+  {f:'🇦🇷',n:'アルゼンチン',r:2,us:850,jp:10.0,tier:'S',
+   note:'ディフェンディングチャンピオン。メッシ38歳の状態が全て。'},
+  {f:'🇧🇷',n:'ブラジル',r:5,us:850,jp:10.0,tier:'A',
+   note:'南米予選5位通過と弱体化。名前の割に実力は過大評価気味。'},
+  {f:'🇵🇹',n:'ポルトガル',r:6,us:1100,jp:12.5,tier:'A',
+   note:'若手台頭・ロナウド問題が焦点。組み合わせ次第で大化けあり。'},
+  {f:'🇩🇪',n:'ドイツ',r:9,us:1400,jp:16.0,tier:'A',
+   note:'EURO2024で復活・ムシアラ世代完成。長期的に最も成長中。'},
+  {f:'🇳🇱',n:'オランダ',r:7,us:2000,jp:22.0,tier:'A',
+   note:'EURO2024準優勝・堅守速攻。ファン・ダイク主将の組織力。'},
+  {f:'🇳🇴',n:'ノルウェー',r:29,us:2800,jp:33.0,tier:'B',
+   note:'🎯 穴馬筆頭。ハーランド擁する初出場。日本でオッズが甘くなりやすい。'},
+  {f:'🇧🇪',n:'ベルギー',r:8,us:3500,jp:38.0,tier:'B',
+   note:'黄金世代以降の再建期。若い世代の覚醒次第。'},
+  {f:'🇨🇴',n:'コロンビア',r:13,us:4000,jp:45.0,tier:'B',
+   note:'🎯 コパ準優勝・ルイス・ディアス主役。日本での知名度低く狙い目。'},
+  {f:'🇯🇵',n:'日本',r:18,us:5000,jp:51.0,tier:'B',
+   note:'W杯2022 ドイツ・スペイン撃破。欧州組最多。ベスト8が現実的。'},
+  {f:'🇲🇦',n:'モロッコ',r:11,us:6000,jp:65.0,tier:'B',
+   note:'W杯2022 アフリカ初ベスト4。守備固め組織力は本物。'},
+  {f:'🇺🇾',n:'ウルグアイ',r:16,us:6500,jp:70.0,tier:'B',
+   note:'南米伝統の守備力。若い世代の成長に期待。'},
+  {f:'🇹🇷',n:'トルコ',r:25,us:6500,jp:70.0,tier:'B',
+   note:'EURO2024ベスト8。個人技とフィジカルを兼ね備えた新興勢力。'},
+  {f:'🇺🇸',n:'アメリカ',r:14,us:6500,jp:70.0,tier:'C',
+   note:'開催国補正あり。若い世代が急成長中。ホームの雰囲気で番狂わせ可能。'},
+  {f:'🇲🇽',n:'メキシコ',r:15,us:7000,jp:75.0,tier:'C',
+   note:'開催国の一つ。ホームの利があるが今回は戦力的に苦しい。'},
+  {f:'🇪🇨',n:'エクアドル',r:23,us:8000,jp:85.0,tier:'C',
+   note:'南米予選4位通過。バレンシア主軸の堅実なチーム。'},
+  {f:'🇸🇪',n:'スウェーデン',r:43,us:8000,jp:85.0,tier:'C',
+   note:'イブラヒモビッチ引退後の再建期。ただしフィジカルは健在。'},
+  {f:'🇭🇷',n:'クロアチア',r:10,us:9000,jp:95.0,tier:'C',
+   note:'W杯2018準優勝・2022準決勝。モドリッチ38歳の引退大会か。'},
+  {f:'🇨🇭',n:'スイス',r:17,us:10000,jp:105.0,tier:'C',
+   note:'組織的な守備で安定した成績。ジャカ世代の集大成。'},
+  {f:'🇸🇳',n:'セネガル',r:19,us:10000,jp:105.0,tier:'C',
+   note:'W杯2022ベスト8・マネ世代の後継が育っているか。'},
+  {f:'🇦🇹',n:'オーストリア',r:24,us:10000,jp:105.0,tier:'C',
+   note:'EURO2024ベスト16・アラバ主将の組織力。欧州での成長が顕著。'},
+  {f:'🇵🇾',n:'パラグアイ',r:39,us:20000,jp:200.0,tier:'D',note:'南米予選通過組。堅守が武器。'},
+  {f:'🇨🇦',n:'カナダ',r:27,us:20000,jp:200.0,tier:'D',note:'開催国の一つ。若い世代の初出場大会。'},
+  {f:'🏴󠁧󠁢󠁳󠁣󠁴󠁿',n:'スコットランド',r:36,us:20000,jp:200.0,tier:'D',note:'欧州予選突破。フィジカル重視のスタイル。'},
+  {f:'🇨🇮',n:'コートジボワール',r:42,us:25000,jp:250.0,tier:'D',note:'アフリカ強豪。若い世代への移行期。'},
+  {f:'🇪🇬',n:'エジプト',r:34,us:30000,jp:300.0,tier:'D',note:'サラー頼みの体制が続く。サラーの調子次第。'},
+  {f:'🇰🇷',n:'韓国',r:22,us:35000,jp:350.0,tier:'D',note:'ソン・フンミン世代の集大成。'},
+  {f:'🇬🇭',n:'ガーナ',r:72,us:35000,jp:350.0,tier:'D',note:'アフリカの一発屋タイプ。'},
+  {f:'🇩🇿',n:'アルジェリア',r:35,us:35000,jp:350.0,tier:'D',note:'アフリカカップ優勝経験あり。'},
+  {f:'🇦🇺',n:'オーストラリア',r:26,us:45000,jp:450.0,tier:'D',note:'W杯2022ベスト16・ジェディナク体制。'},
+  {f:'🇹🇳',n:'チュニジア',r:40,us:50000,jp:500.0,tier:'D',note:'アフリカ予選通過組。'},
+  {f:'🇿🇦',n:'南アフリカ',r:61,us:80000,jp:800.0,tier:'D',note:'アフリカ予選突破。'},
+  {f:'🇵🇦',n:'パナマ',r:30,us:100000,jp:1000.0,tier:'D',note:'中米の雄。初出場グループの一つ。'},
+  {f:'🇶🇦',n:'カタール',r:51,us:100000,jp:1000.0,tier:'D',note:'前回開催国。大会実績から評価が難しい。'},
+  {f:'🇸🇦',n:'サウジアラビア',r:60,us:100000,jp:1000.0,tier:'D',note:'W杯2022でアルゼンチン撃破の実績。'},
 ];
-const b16grid=document.getElementById('b16grid');
-b16teams.forEach(t=>{
-  const prob=p(t.us),ev16=evPct(prob,t.jp16);
-  const evCol=evColor(ev16);
-  b16grid.innerHTML+=`<div class="final-card">
-    <span class="final-flag">${t.f}</span>
-    <div><div class="final-name">${t.n}</div><div class="final-sub">${t.note}</div></div>
-    <div class="final-odds">
-      <div class="final-odds-num">${t.jp16}倍</div>
-      <div class="final-odds-ev" style="color:${evCol}">EV ${parseFloat(ev16)>0?'+':''}${ev16}%</div>
-    </div>
-  </div>`;
-});
-const tb2=document.getElementById('tb2');
-b16teams.forEach(t=>{
-  const prob=p(t.us),ev0=evPct(prob,t.jp),ev16=evPct(prob,t.jp16);
+
+// ═══ TABLE 1: 開幕期 ═══
+let sortDir1={};
+function buildT1(data){
+  const tb=document.getElementById('t1b');
+  tb.innerHTML='';
+  data.forEach(t=>{
+    const prob=p(t.us), evVal=ev(prob,t.jp);
+    const [bc,bl]=evBadge(evVal);
+    const barW=Math.min(Math.max((evVal+30)/80*100,0),100);
+    tb.innerHTML+=`<tr data-tier="${t.tier}" data-ev="${evVal.toFixed(1)}" data-cat="${evVal>3?'buy':evVal>-5?'neutral':'avoid'}">
+      <td><div class="tc"><span class="fl">${t.f}</span><div><div class="tn">${t.n}</div><div class="ts">FIFAランク ${t.r}位 / ${t.note}</div></div></div></td>
+      <td class="c"><span class="tier ${TC[t.tier]}">${t.tier}級</span></td>
+      <td class="r"><strong>+${t.us.toLocaleString()}</strong></td>
+      <td class="r"><div class="pb"><div class="pb-n">${(prob*100).toFixed(1)}%</div><div class="pb-t"><div class="pb-f" style="width:${Math.min(prob*400,100)}%;background:${evColor(evVal)}"></div></div></div></td>
+      <td class="r"><strong>${t.jp}倍</strong></td>
+      <td class="r">
+        <div class="ev-bar">
+          <span class="ev-num" style="color:${evColor(evVal)}">${evFmt(evVal)}</span>
+          <div class="ev-track"><div class="ev-fill" style="width:${barW}%;background:${evColor(evVal)}"></div><div class="ev-zero" style="left:${30/80*100}%"></div></div>
+        </div>
+      </td>
+      <td class="c"><span class="badge ${bc}">${bl}</span></td>
+    </tr>`;
+  });
+}
+buildT1(TEAMS);
+function filter1(cat,btn){
+  document.querySelectorAll('#f1 .fbtn').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  const rows=document.querySelectorAll('#t1b tr');
+  rows.forEach(r=>{
+    const show=cat==='all'||(cat==='buy'&&r.dataset.cat==='buy')||(cat==='neutral'&&r.dataset.cat==='neutral')||(cat==='avoid'&&r.dataset.cat==='avoid')||r.dataset.tier===cat;
+    r.style.display=show?'':'none';
+  });
+}
+function sortTbl(id,key){
+  const tb=document.getElementById(id+'b');
+  const rows=[...tb.querySelectorAll('tr')];
+  sortDir1[key]=!sortDir1[key];
+  rows.sort((a,b)=>{
+    const va=parseFloat(a.dataset[key])||0;
+    const vb=parseFloat(b.dataset[key])||0;
+    return sortDir1[key]?vb-va:va-vb;
+  });
+  rows.forEach(r=>tb.appendChild(r));
+}
+
+// ═══ TABLE 2: ベスト16 ═══
+const B16=[
+  {f:'🇪🇸',n:'スペイン',us:450,jp:5.5,jp16:4.2,note:'1位通過ほぼ確実'},
+  {f:'🇫🇷',n:'フランス',us:600,jp:7.0,jp16:5.8,note:'安定通過'},
+  {f:'🏴󠁧󠁢󠁥󠁮󠁧󠁿',n:'イングランド',us:600,jp:7.0,jp16:5.8,note:'安定通過'},
+  {f:'🇦🇷',n:'アルゼンチン',us:850,jp:10.0,jp16:8.2,note:'メッシ状態次第'},
+  {f:'🇧🇷',n:'ブラジル',us:850,jp:10.0,jp16:8.5,note:'予選苦戦で不安あり'},
+  {f:'🇵🇹',n:'ポルトガル',us:1100,jp:12.5,jp16:10.0,note:'安定通過'},
+  {f:'🇩🇪',n:'ドイツ',us:1400,jp:16.0,jp16:12.5,note:'組み合わせ次第'},
+  {f:'🇳🇱',n:'オランダ',us:2000,jp:22.0,jp16:17.0,note:'安定した守備力'},
+  {f:'🇳🇴',n:'ノルウェー',us:2800,jp:33.0,jp16:22.0,note:'🎯波乱候補・ここが最大の狙い目'},
+  {f:'🇨🇴',n:'コロンビア',us:4000,jp:45.0,jp16:30.0,note:'🎯コパ実績で大幅上昇あり'},
+  {f:'🇯🇵',n:'日本',us:5000,jp:51.0,jp16:32.0,note:'グループ突破65%なら大化け'},
+  {f:'🇲🇦',n:'モロッコ',us:6000,jp:65.0,jp16:40.0,note:'W杯2022実績のチーム'},
+];
+const t2b=document.getElementById('t2b');
+B16.forEach(t=>{
+  const prob=p(t.us), ev0=ev(prob,t.jp), ev16=ev(prob,t.jp16);
   const diff=(t.jp16-t.jp).toFixed(1);
-  const [bc,bl]=badgeCls(ev16);
-  tb2.innerHTML+=`<tr>
-    <td><div class="tc"><span class="fl">${t.f}</span><div class="tn">${t.n}</div></div></td>
+  const [bc,bl]=evBadge(ev16);
+  t2b.innerHTML+=`<tr>
+    <td><div class="tc"><span class="fl">${t.f}</span><div><div class="tn">${t.n}</div><div class="ts">${t.note}</div></div></div></td>
     <td class="r">${t.jp}倍</td>
     <td class="r"><strong>${t.jp16}倍</strong></td>
-    <td class="r"><span style="color:${parseFloat(diff)<0?'var(--red)':'var(--green)'}">${diff}倍</span></td>
-    <td class="r"><strong style="color:${evColor(ev16)}">${parseFloat(ev16)>0?'+':''}${ev16}%</strong></td>
+    <td class="r"><span style="color:${parseFloat(diff)<0?'var(--red)':'var(--green)'};font-weight:700">${diff}倍</span></td>
+    <td class="r"><span style="color:${evColor(ev0)};font-weight:700">${evFmt(ev0)}</span></td>
+    <td class="r"><span style="color:${evColor(ev16)};font-weight:700">${evFmt(ev16)}</span></td>
     <td class="c"><span class="badge ${bc}">${bl}</span></td>
   </tr>`;
 });
 
-// PAGE 3: 日本成績
-const jpnResults=[
-  {r:'グループ敗退（勝ち点0）',odds:8.0,prob2026:5,cls:'loss'},
-  {r:'グループ敗退（勝ち点1）',odds:6.5,prob2026:7,cls:'loss'},
-  {r:'グループ敗退（勝ち点3）',odds:3.5,prob2026:12,cls:'loss'},
-  {r:'グループ敗退（勝ち点4）',odds:5.0,prob2026:8,cls:'loss'},
-  {r:'グループ敗退（勝ち点6）',odds:4.5,prob2026:3,cls:'loss'},
-  {r:'ベスト16（ラウンド32敗退）',odds:3.2,prob2026:25,cls:'watch',note:'2026新設ラウンド32'},
-  {r:'ベスト16（R32突破後敗退）',odds:2.8,prob2026:20,cls:''},
-  {r:'ベスト8',odds:4.5,prob2026:15,cls:'hot',note:'◎最も期待値が出やすい'},
-  {r:'ベスト4（4位）',odds:12.0,prob2026:3,cls:''},
-  {r:'3位',odds:18.0,prob2026:2,cls:''},
-  {r:'準優勝',odds:28.0,prob2026:1,cls:''},
-  {r:'優勝',odds:55.0,prob2026:0.5,cls:''},
+// ═══ JAPAN RESULTS ═══
+const JPN=[
+  {n:'グループ敗退（勝ち点0）',prob:5,jp:8.5,cls:''},
+  {n:'グループ敗退（勝ち点1）',prob:6,jp:7.0,cls:''},
+  {n:'グループ敗退（勝ち点3）',prob:10,jp:4.0,cls:''},
+  {n:'グループ敗退（勝ち点4）',prob:7,jp:5.5,cls:''},
+  {n:'グループ敗退（勝ち点6）',prob:4,jp:6.0,cls:''},
+  {n:'ベスト32（R32敗退）※新設?',prob:10,jp:3.5,cls:'',note:'2026新フォーマット'},
+  {n:'ベスト16（R32突破後敗退）',prob:20,jp:3.2,cls:''},
+  {n:'ベスト8',prob:25,jp:5.0,cls:'hot',note:'◎ EV最高・最推奨'},
+  {n:'ベスト4（4位）',prob:8,jp:12.0,cls:''},
+  {n:'3位',prob:3,jp:18.0,cls:''},
+  {n:'準優勝',prob:1.5,jp:28.0,cls:''},
+  {n:'優勝',prob:0.5,jp:55.0,cls:''},
 ];
-const jpngrid=document.getElementById('jpngrid');
-jpnResults.forEach(j=>{
-  const evV=((j.prob2026/100)*j.odds-1)*100;
+const jgrid=document.getElementById('jpn-grid');
+JPN.forEach(j=>{
+  const evVal=ev(j.prob/100,j.jp);
   const isHot=j.cls==='hot';
-  jpngrid.innerHTML+=`<div class="jpn-row" style="${isHot?'border:2px solid var(--amber);background:var(--amber-bg);':''}">
-    <div>
-      <div class="jpn-result">${j.r}</div>
-      <div class="jpn-meta">推定確率 ${j.prob2026}%${j.note?'　<strong style="color:var(--amber)">'+j.note+'</strong>':''}</div>
+  jgrid.innerHTML+=`<div class="jr${isHot?' hot':''}">
+    <div class="jr-l">
+      <div class="name">${j.n}${j.note?'<br><small style="color:var(--amber);font-weight:600">'+j.note+'</small>':''}</div>
+      <div class="prob">推定確率 ${j.prob}%</div>
     </div>
-    <div class="jpn-odds">
-      <div class="jpn-odds-num" style="color:${isHot?'var(--amber)':'var(--ink)'}">${j.odds}倍</div>
-      <div class="jpn-odds-sub" style="color:${evV>0?'var(--green)':evV>-15?'var(--muted)':'var(--red)'}">EV ${evV>0?'+':''}${evV.toFixed(0)}%</div>
+    <div class="jr-r">
+      <div class="odds" style="color:${isHot?'var(--amber)':'var(--ink)'}">${j.jp}倍</div>
+      <div class="ev" style="color:${evColor(evVal)}">${evFmt(evVal)}</div>
     </div>
   </div>`;
 });
 
-// PAGE 4: 決勝カード
-const finals=[
-  {a:'🇪🇸 スペイン',b:'🇫🇷 フランス',prob:4.2,jp:28.0,note:'最有力の大本命対決'},
-  {a:'🇪🇸 スペイン',b:'🏴󠁧󠁢󠁥󠁮󠁧󠁿 イングランド',prob:3.8,jp:32.0,note:'2024EURO決勝の再現'},
-  {a:'🇫🇷 フランス',b:'🇦🇷 アルゼンチン',prob:3.5,jp:35.0,note:'2022決勝の再現'},
+// ═══ FINALS ═══
+const FINALS=[
+  {a:'🇪🇸 スペイン',b:'🇫🇷 フランス',prob:4.2,jp:28.0,note:'最有力の本命対決・EURO系覇権争い'},
+  {a:'🇪🇸 スペイン',b:'🏴󠁧󠁢󠁥󠁮󠁧󠁿 イングランド',prob:3.8,jp:32.0,note:'EURO2024決勝の再現'},
+  {a:'🇫🇷 フランス',b:'🇦🇷 アルゼンチン',prob:3.5,jp:35.0,note:'2022年決勝再現'},
   {a:'🇪🇸 スペイン',b:'🇦🇷 アルゼンチン',prob:2.8,jp:42.0,note:'欧州vs南米の大一番'},
-  {a:'🏴󠁧󠁢󠁥󠁮󠁧󠁿 イングランド',b:'🇫🇷 フランス',prob:2.5,jp:48.0,note:'2022QFの再現'},
+  {a:'🏴󠁧󠁢󠁥󠁮󠁧󠁿 イングランド',b:'🇫🇷 フランス',prob:2.5,jp:48.0,note:'2022QFリマッチ'},
   {a:'🇪🇸 スペイン',b:'🇧🇷 ブラジル',prob:2.2,jp:55.0,note:'欧南伝統の一戦'},
-  {a:'🇫🇷 フランス',b:'🇵🇹 ポルトガル',prob:2.0,jp:60.0,note:'欧州強豪対決'},
-  {a:'🇩🇪 ドイツ',b:'🇪🇸 スペイン',prob:1.8,jp:70.0,note:'欧州対決・復活ドイツに注目'},
-  {a:'🇳🇴 ノルウェー',b:'🇪🇸 スペイン',prob:0.8,jp:160.0,note:'穴！ハーランド旋風なら'},
+  {a:'🇦🇷 アルゼンチン',b:'🏴󠁧󠁢󠁥󠁮󠁧󠁿 イングランド',prob:2.0,jp:60.0,note:'マラドーナの因縁対決'},
+  {a:'🇩🇪 ドイツ',b:'🇪🇸 スペイン',prob:1.8,jp:68.0,note:'欧州覇権争い・ドイツ復活なら'},
+  {a:'🇫🇷 フランス',b:'🇵🇹 ポルトガル',prob:1.8,jp:68.0,note:'欧州同士の好カード'},
+  {a:'🇳🇴 ノルウェー',b:'🇪🇸 スペイン',prob:0.8,jp:160.0,note:'🔥 穴！ハーランド旋風なら夢の決勝'},
+  {a:'🇨🇴 コロンビア',b:'🏴󠁧󠁢󠁥󠁮󠁧󠁿 イングランド',prob:0.6,jp:210.0,note:'🔥 波乱カード'},
   {a:'🇯🇵 日本',b:'🇪🇸 スペイン',prob:0.3,jp:400.0,note:'夢の決勝・超高倍率'},
 ];
-const tb4=document.getElementById('tb4');
-finals.forEach(f=>{
-  const evV=((f.prob/100)*f.jp-1)*100;
-  const [bc,bl]=badgeCls(evV.toFixed(0));
-  tb4.innerHTML+=`<tr>
+const t4b=document.getElementById('t4b');
+FINALS.forEach(f=>{
+  const evVal=ev(f.prob/100,f.jp);
+  const [bc,bl]=evBadge(evVal);
+  t4b.innerHTML+=`<tr>
     <td><strong>${f.a} vs ${f.b}</strong></td>
     <td class="r">${f.prob}%</td>
     <td class="r"><strong>${f.jp}倍</strong></td>
-    <td class="r" style="color:${evColor(evV.toFixed(0))}">${evV>0?'+':''}${evV.toFixed(0)}%</td>
+    <td class="r"><span style="color:${evColor(evVal)};font-weight:800">${evFmt(evVal)}</span></td>
     <td class="c"><span class="badge ${bc}">${bl}</span></td>
-    <td style="color:var(--muted);font-size:11px">${f.note}</td>
+    <td style="font-size:11px;color:var(--muted)">${f.note}</td>
   </tr>`;
 });
+
+// ═══ SCORE TABLE ═══
+const SCORES=[
+  {s:'1-0',p:14.5,eu:6.9,jp:7.5,cat:'popular'},
+  {s:'2-1',p:13.2,eu:7.6,jp:8.0,cat:'popular'},
+  {s:'1-1',p:11.8,eu:8.5,jp:9.5,cat:'popular'},
+  {s:'2-0',p:10.5,eu:9.5,jp:10.5,cat:'popular'},
+  {s:'0-0',p:7.2,eu:13.9,jp:16.0,cat:'neutral'},
+  {s:'0-1',p:8.8,eu:11.4,jp:13.0,cat:'neutral'},
+  {s:'3-1',p:5.5,eu:18.2,jp:22.0,cat:'neutral'},
+  {s:'3-0',p:4.8,eu:20.8,jp:28.0,cat:'high'},
+  {s:'2-2',p:4.2,eu:23.8,jp:32.0,cat:'high'},
+  {s:'0-2',p:5.5,eu:18.2,jp:23.0,cat:'neutral'},
+  {s:'1-2',p:6.8,eu:14.7,jp:17.0,cat:'neutral'},
+  {s:'3-2',p:3.1,eu:32.3,jp:45.0,cat:'high'},
+  {s:'4-0',p:2.2,eu:45.5,jp:70.0,cat:'high'},
+  {s:'4-1',p:1.8,eu:55.6,jp:90.0,cat:'high'},
+  {s:'0-3',p:2.8,eu:35.7,jp:55.0,cat:'high'},
+];
+const t5b=document.getElementById('t5b');
+SCORES.forEach(s=>{
+  const evVal=ev(s.p/100,s.jp);
+  const [bc,bl]=evBadge(evVal);
+  t5b.innerHTML+=`<tr>
+    <td><strong style="font-size:15px">${s.s}</strong></td>
+    <td class="r"><div class="pb"><div class="pb-n">${s.p}%</div><div class="pb-t"><div class="pb-f" style="width:${Math.min(s.p*4,100)}%;background:${evColor(evVal)}"></div></div></div></td>
+    <td class="r">${s.eu}倍</td>
+    <td class="r"><strong>${s.jp}倍</strong></td>
+    <td class="r"><span style="color:${evColor(evVal)};font-weight:800">${evFmt(evVal)}</span></td>
+    <td class="c"><span class="badge ${bc}">${bl}</span></td>
+  </tr>`;
+});
+
+// ═══ LEADERBOARD (総合) ═══
+const allItems=[
+  ...TEAMS.slice(0,15).map(t=>({
+    cat:'優勝予想（開幕期）',
+    label:`${t.f} ${t.n}`,
+    ev:ev(p(t.us),t.jp),
+    jp:t.jp,
+    overseas:`+${t.us.toLocaleString()}`,
+    note:t.note,
+  })),
+  {cat:'日本代表成績',label:'🇯🇵 ベスト8',ev:ev(0.25,5.0),jp:5.0,overseas:'確率25%試算',note:'◎最推奨・期待値最高'},
+  {cat:'日本代表成績',label:'🇯🇵 ベスト16',ev:ev(0.20,3.2),jp:3.2,overseas:'確率20%試算',note:'確率高いが倍率低め'},
+  ...FINALS.slice(0,8).map(f=>({
+    cat:'決勝カード',
+    label:`${f.a} vs ${f.b}`,
+    ev:ev(f.prob/100,f.jp),
+    jp:f.jp,
+    overseas:`確率${f.prob}%`,
+    note:f.note,
+  })),
+  ...B16.slice(0,6).map(t=>({
+    cat:'優勝予想（ベスト16）',
+    label:`${t.f} ${t.n}`,
+    ev:ev(p(t.us),t.jp16),
+    jp:t.jp16,
+    overseas:`+${t.us.toLocaleString()}`,
+    note:t.note,
+  })),
+].sort((a,b)=>b.ev-a.ev);
+
+const lb=document.getElementById('leaderboard');
+allItems.slice(0,20).forEach((item,i)=>{
+  const rankCls=i===0?'gold':i===1?'silver':i===2?'bronze':'';
+  const [bc,bl]=evBadge(item.ev);
+  lb.innerHTML+=`<div class="lb-row">
+    <div class="lb-rank ${rankCls}">${i+1}</div>
+    <div style="flex:1">
+      <div style="font-size:13px;font-weight:700">${item.label}</div>
+      <div style="font-size:10px;color:var(--muted);margin-top:2px"><span class="badge b-blue" style="font-size:9px">${item.cat}</span>　${item.note}</div>
+    </div>
+    <div style="text-align:right;margin-left:12px;flex-shrink:0">
+      <div style="font-size:15px;font-weight:900;color:${evColor(item.ev)}">${evFmt(item.ev)}</div>
+      <div style="font-size:10px;color:var(--muted)">日本推定 ${item.jp}倍</div>
+    </div>
+    <div style="margin-left:10px;flex-shrink:0"><span class="badge ${bc}">${bl}</span></div>
+  </div>`;
+});
+
+// BUY / AVOID リスト
+const buyL=document.getElementById('buyList');
+const avoidL=document.getElementById('avoidList');
+allItems.filter(x=>x.ev>5).slice(0,8).forEach(item=>{
+  buyL.innerHTML+=`<div class="sum-row">
+    <div class="sum-l"><svg viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>${item.label}</div>
+    <div class="sum-r">
+      <span style="font-size:11px;color:var(--muted)">${item.cat}</span>
+      <span style="font-weight:800;color:var(--green)">${evFmt(item.ev)}</span>
+    </div>
+  </div>`;
+});
+allItems.filter(x=>x.ev<-20).slice(0,8).forEach(item=>{
+  avoidL.innerHTML+=`<div class="sum-row">
+    <div class="sum-l"><svg viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>${item.label}</div>
+    <div class="sum-r">
+      <span style="font-size:11px;color:var(--muted)">${item.cat}</span>
+      <span style="font-weight:800;color:var(--red)">${evFmt(item.ev)}</span>
+    </div>
+  </div>`;
+});
+
+// ═══ MARKET GUIDE ═══
+const MKTS=[
+  {num:'①',numColor:'#eff6ff',numTxt:'#2563eb',title:'優勝予想（開幕期）',sub:'全48カ国・大会開幕〜約5日間',
+   body:'全出場国から優勝国を予想。最もベーシックで購入しやすい。開幕前に必ず倍率を確認し、EVが+5%以上の国を選択する。',
+   tags:['確率×倍率でEV計算','穴馬狙い有効'],tagCols:['#eff6ff','#f0fdf4'],
+   kpiLbl:'推奨購入タイミング',kpiVal:'開幕直前',kpiColor:'var(--blue)'},
+  {num:'②',numColor:'#ecfdf5',numTxt:'#059669',title:'優勝予想（ベスト16）',sub:'16カ国確定後・1日のみ',
+   body:'最重要商品。2022年は約1日のみ販売。グループで波乱があると倍率が大きく動く。事前に狙い国を決めておくことが必須。',
+   tags:['1日限定販売','波乱後が最大チャンス'],tagCols:['#fef3c7','#f0fdf4'],
+   kpiLbl:'推奨購入タイミング',kpiVal:'即時購入',kpiColor:'var(--green)'},
+  {num:'③',numColor:'#fef3c7',numTxt:'#92400e',title:'日本代表 成績予想',sub:'初戦前日まで・13択',
+   body:'日本代表の最終成績を13択で予想。ベスト8（推定5倍前後）が最もEV的に優位。グループ突破確率が上がる2026フォーマット変更に注目。',
+   tags:['13択','ベスト8が最推奨'],tagCols:['#f5f3ff','#ecfdf5'],
+   kpiLbl:'最推奨選択肢',kpiVal:'ベスト8',kpiColor:'var(--amber)'},
+  {num:'④',numColor:'#fef2f2',numTxt:'#dc2626',title:'決勝カード予想',sub:'準々決勝前・数日のみ',
+   body:'決勝の2カ国を予想。2026は28通りの組み合わせ。スペイン×フランスが最有力だがその分倍率が低い。波乱カードで高倍率狙いが鍵。',
+   tags:['28通り','波乱カード狙い'],tagCols:['#fef3c7','#eff6ff'],
+   kpiLbl:'最有力組み合わせ',kpiVal:'ESP×FRA',kpiColor:'var(--red)'},
+  {num:'⑤',numColor:'#ecfeff',numTxt:'#0891b2',title:'1試合予想（WINNER）',sub:'全104試合・試合直前まで',
+   body:'各試合のスコアを18択で予想。2026は+40試合増加。日本代表戦は国内投票が集中しオッズが歪む。逆張り戦略が機能しやすい。',
+   tags:['104試合対象','日本戦逆張り有効'],tagCols:['#ecfeff','#f0fdf4'],
+   kpiLbl:'推奨分散口数',kpiVal:'3〜5口/試合',kpiColor:'var(--cyan)'},
+  {num:'⑥?',numColor:'#f5f3ff',numTxt:'#7c3aed',title:'優勝予想（ベスト32）',sub:'2026年新設の可能性',
+   body:'2026から新設されるラウンド32（48→32カ国）後に追加商品が出る可能性。開幕期とベスト16の間の商品として最大の穴狙いチャンスになりうる。',
+   tags:['2026新設予測','未確定'],tagCols:['#fef3c7','var(--surf)'],
+   kpiLbl:'ステータス',kpiVal:'TBD',kpiColor:'var(--purple)'},
+];
+const mg=document.getElementById('mkt-grid');
+MKTS.forEach(m=>{
+  const tagsHtml=m.tags.map((t,i)=>`<span class="mkt-tag" style="background:${m.tagCols[i]};color:var(--ink2)">${t}</span>`).join('');
+  mg.innerHTML+=`<div class="mkt">
+    <div class="mkt-h"><div class="mkt-num" style="background:${m.numColor};color:${m.numTxt}">${m.num}</div>
+    <div><div class="mkt-title">${m.title}</div><div class="mkt-sub">${m.sub}</div></div></div>
+    <div class="mkt-b">${m.body}<div class="mkt-tags">${tagsHtml}</div></div>
+    <div class="mkt-f"><span class="lbl">${m.kpiLbl}</span><span class="val" style="color:${m.kpiColor}">${m.kpiVal}</span></div>
+  </div>`;
+});
+
+// Timeline
+const TL=[
+  {date:'2026年6月11日',label:'大会開幕',note:'①優勝予想（開幕期）販売開始',color:'var(--blue)'},
+  {date:'6月中旬',label:'GSテージ 第2戦前',note:'①優勝予想（開幕期）販売終了 / 各試合WINNER販売継続',color:'var(--muted)'},
+  {date:'6月下旬',label:'グループステージ終了',note:'②優勝予想（ベスト16）販売開始（約1日のみ）',color:'var(--amber)'},
+  {date:'7月上旬',label:'ラウンド16終了',note:'④決勝カード予想 販売開始',color:'var(--purple)'},
+  {date:'7月中旬',label:'準々決勝終了',note:'④決勝カード予想 販売終了',color:'var(--muted)'},
+  {date:'7月19日',label:'決勝',note:'全WINNER商品の結果確定',color:'var(--green)'},
+];
+const tl=document.getElementById('timeline');
+TL.forEach((t,i)=>{
+  tl.innerHTML+=`<div class="sum-row">
+    <div class="sum-l">
+      <div style="width:8px;height:8px;border-radius:50%;background:${t.color};flex-shrink:0"></div>
+      <div><div style="font-size:12px;font-weight:700;color:var(--ink)">${t.date}　${t.label}</div>
+      <div style="font-size:11px;color:var(--muted)">${t.note}</div></div>
+    </div>
+  </div>`;
+});
+
+// ═══ TAB SWITCH ═══
+function sw(i){
+  document.querySelectorAll('.tb').forEach((b,j)=>b.classList.toggle('on',j===i));
+  document.querySelectorAll('.pg').forEach((p,j)=>p.classList.toggle('on',j===i));
+  window.scrollTo({top:0,behavior:'smooth'});
+}
 </script>
 </body>
 </html>
